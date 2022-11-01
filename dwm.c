@@ -158,6 +158,7 @@ static void clientmessage(XEvent *e);
 static void configure(Client *c);
 static void configurenotify(XEvent *e);
 static void configurerequest(XEvent *e);
+static void copyvalidchars(char *text, char *rawtext);
 static Monitor *createmon(void);
 static void destroynotify(XEvent *e);
 static void detach(Client *c);
@@ -242,6 +243,10 @@ static void zoom(const Arg *arg);
 /* variables */
 static const char broken[] = "broken";
 static char stext[256];
+static char rawstext[256];
+static const char statusexport[] = "export BUTTON=-;";
+static int statuscmdn;
+static int lastbutton;
 static int screen;
 static int sw, sh;           /* X display screen geometry width, height */
 static int bh;               /* bar height */
@@ -433,6 +438,7 @@ buttonpress(XEvent *e)
 	Client *c;
 	Monitor *m;
 	XButtonPressedEvent *ev = &e->xbutton;
+	lastbutton = ev->button;
 
 	click = ClkRootWin;
 	/* focus monitor if necessary */
@@ -451,9 +457,26 @@ buttonpress(XEvent *e)
 			arg.ui = 1 << i;
 		} else if (ev->x < x + TEXTW(selmon->ltsymbol))
 			click = ClkLtSymbol;
-		else if (ev->x > selmon->ww - (int)TEXTW(stext))
+		else if (ev->x > (x = selmon->ww - (int)TEXTW(stext) + lrpad)) {
 			click = ClkStatusText;
-		else
+
+			char *text = rawstext;
+			int i = -1;
+			char ch;
+			statuscmdn = 0;
+			while (text[++i]) {
+				if ((unsigned char)text[i] < ' ') {
+					ch = text[i];
+					text[i] = '\0';
+					x += TEXTW(text) - lrpad;
+					text[i] = ch;
+					text += i+1;
+					i = -1;
+					if (x >= ev->x) break;
+					if (ch <= LENGTH(statuscmds)) statuscmdn = ch - 1;
+				}
+			}
+		} else
 			click = ClkWinTitle;
 	} else if ((c = wintoclient(ev->window))) {
 		focus(c);
@@ -639,6 +662,20 @@ configurerequest(XEvent *e)
 	}
 	XSync(dpy, False);
 }
+
+void
+copyvalidchars(char *text, char *rawtext)
+{
+	int i = -1, j = 0;
+
+	while(rawtext[++i]) {
+		if ((unsigned char)rawtext[i] >= ' ') {
+			text[j++] = rawtext[i];
+		}
+	}
+	text[j] = '\0';
+}
+
 
 Monitor *
 createmon(void)
@@ -1689,8 +1726,18 @@ sigchld(int unused)
 void
 spawn(const Arg *arg)
 {
+	char *cmd = NULL;
 	if (arg->v == dmenucmd)
 		dmenumon[0] = '0' + selmon->num;
+	else if (arg->v == statuscmd) {
+	        int len = strlen(statuscmds[statuscmdn]) + 1;
+	        if (!(cmd = malloc(sizeof(char)*len + sizeof(statusexport))))
+	        	die("malloc:");
+	        strcpy(cmd, statusexport);
+	        strcat(cmd, statuscmds[statuscmdn]);
+	        cmd[LENGTH(statusexport)-3] = '0' + lastbutton;
+	        statuscmd[2] = cmd;
+	}
 	if (fork() == 0) {
 		if (dpy)
 			close(ConnectionNumber(dpy));
@@ -1698,6 +1745,8 @@ spawn(const Arg *arg)
 		execvp(((char **)arg->v)[0], (char **)arg->v);
 		die("dwm: execvp '%s' failed:", ((char **)arg->v)[0]);
 	}
+
+	free(cmd);
 }
 
 void
@@ -2041,8 +2090,10 @@ updatesizehints(Client *c)
 void
 updatestatus(void)
 {
-	if (!gettextprop(root, XA_WM_NAME, stext, sizeof(stext)))
+	if (!gettextprop(root, XA_WM_NAME, rawstext, sizeof(rawstext)))
 		strcpy(stext, "dwm-"VERSION);
+	else
+		copyvalidchars(stext, rawstext);
 	drawbar(selmon);
 }
 
