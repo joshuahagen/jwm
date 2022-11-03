@@ -107,6 +107,7 @@ static const Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_F1,                     spawn,          SHCMD("~/.local/bin/shutdown") },
         { MODKEY|ShiftMask,             XK_F5,                     spawn,          SHCMD("~/.local/bin/dmenu_set_wallpaper") },
         { MODKEY|ShiftMask,             XK_f,                      spawn,          SHCMD("firefox-bin") },
+	{ MODKEY|ShiftMask,   		XK_l,			   spawn,	   SHCMD("libreoffice") },
         { MODKEY|ShiftMask,             XK_s,                      spawn,          SHCMD("signal-desktop") },
         { MODKEY|ShiftMask,             XK_t,                      spawn,          SHCMD("~/.local/bin/launch_tos") },
         { MODKEY,                       XK_Print,                  spawn,          SHCMD("~/.local/bin/dmenu_ss_all") },
