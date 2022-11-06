@@ -916,7 +916,7 @@ drawbar(Monitor *m)
 		stw = getsystraywidth();
 
 	/* draw status first so it can be overdrawn by tags later */
-	if (m == selmon) { /* status is only drawn on selected monitor */
+	if (m->mw >= 2560) { /* status is only drawn on monitor wide enough to display full statusbar */
 		tw = m->ww - drawstatusbar(m, bh, stext);
 	}
 
