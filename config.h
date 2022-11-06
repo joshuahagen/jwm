@@ -3,19 +3,24 @@
 #include <X11/XF86keysym.h>
 
 /* appearance */
-static const unsigned int borderpx  = 1;        /* border pixel of windows */
-static const unsigned int gappx	    = 3;
-static const unsigned int snap      = 32;       /* snap pixel */
-static const int showbar            = 1;        /* 0 means no bar */
-static const int topbar             = 1;        /* 0 means bottom bar */
-static const int topbar_padding	    = 12;        /* default spacing around the bars font */
-static const char *fonts[]          = { "Hack:size=12" };
-static const char dmenufont[]       = "Hack:size=12";
-static const char col_gray1[]       = "#222222";
-static const char col_gray2[]       = "#444444";
-static const char col_gray3[]       = "#bbbbbb";
-static const char col_gray4[]       = "#eeeeee";
-static const char col_cyan[]        = "#36454f";
+static const unsigned int borderpx       = 1;        /* border pixel of windows */
+static const unsigned int gappx	         = 3;	     /* gap between windows in tiling mode */
+static const unsigned int snap           = 32;       /* snap pixel */
+static const int showbar                 = 1;        /* 0 means no bar */
+static const int topbar                  = 1;        /* 0 means bottom bar */
+static const int topbar_padding	         = 12;       /* default spacing around the bars font */
+static const unsigned int systraypinning = 0;        /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
+static const unsigned int systrayonleft  = 0;        /* 0: systray in the right corner, >0: systray on left of status text */
+static const unsigned int systrayspacing = 2;        /* systray spacing */
+static const int systraypinningfailfirst = 1;        /* 1: if pinning fails, display systray on the first monitor, False: display systray on the last monitor*/
+static const int showsystray        	 = 1;        /* 0 means no systray */
+static const char *fonts[]          	 = { "Hack:size=12" };
+static const char dmenufont[]       	 = "Hack:size=12";
+static const char col_gray1[]       	 = "#222222";
+static const char col_gray2[]       	 = "#444444";
+static const char col_gray3[]       	 = "#bbbbbb";
+static const char col_gray4[]       	 = "#eeeeee";
+static const char col_cyan[]        	 = "#36454f";
 
 static const char *colors[][3]      = {
 	/*               fg         bg         border   */
