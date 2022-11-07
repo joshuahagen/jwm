@@ -22,6 +22,9 @@ static const char col_gray3[]       	 = "#bbbbbb";
 static const char col_gray4[]       	 = "#eeeeee";
 static const char col_cyan[]        	 = "#36454f";
 
+#define ICONSIZE 16	/* icon size */
+#define ICONSPACING 5	/* space between icon and the window title */
+
 static const char *colors[][3]      = {
 	/*               fg         bg         border   */
 	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
