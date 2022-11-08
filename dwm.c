@@ -968,9 +968,11 @@ drawbar(Monitor *m)
 			if (m->sel->icon) {
 				if (!center_title)
 					drw_pic(drw, x + lrpad / 2, (bh - m->sel->ich) / 2, m->sel->icw, m->sel->ich, m->sel->icon);
-				else 
-					drw_pic(drw, x + (w - TEXTW(m->sel->name)) / 2 - (m->sel->icw + 3), 
-							(bh - m->sel->ich) / 2, m->sel->icw, m->sel->ich, m->sel->icon);
+				else
+					/* only draw icon if it has room */
+					if (TEXTW(m->sel->name) < w)
+						drw_pic(drw, x + (w - TEXTW(m->sel->name)) / 2 - (m->sel->icw + 3), 
+								(bh - m->sel->ich) / 2, m->sel->icw, m->sel->ich, m->sel->icon);
 				if (m->sel->isfloating)
 					drw_rect(drw, x + boxs, boxs, boxw, boxw, m->sel->isfixed, 0);
 			}
