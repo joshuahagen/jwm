@@ -172,26 +172,26 @@ static void arrange(Monitor *m);
 static void arrangemon(Monitor *m);
 static void attach(Client *c);
 static void attachstack(Client *c);
-static void buttonpress(XEvent *e);
+static void buttonpress(XEvent *event);
 static void checkotherwm(void);
 static void cleanup(void);
 static void cleanupmon(Monitor *mon);
-static void clientmessage(XEvent *e);
+static void clientmessage(XEvent *event);
 static void configure(Client *c);
-static void configurenotify(XEvent *e);
-static void configurerequest(XEvent *e);
+static void configurenotify(XEvent *event);
+static void configurerequest(XEvent *event);
 static Monitor *createmon(void);
-static void destroynotify(XEvent *e);
+static void destroynotify(XEvent *event);
 static void detach(Client *c);
 static void detachstack(Client *c);
 static Monitor *dirtomon(int dir);
 static void drawbar(Monitor *m);
 static void drawbars(void);
 static int drawstatusbar(Monitor *m, int bh, char* text);
-static void enternotify(XEvent *e);
-static void expose(XEvent *e);
+static void enternotify(XEvent *event);
+static void expose(XEvent *event);
 static void focus(Client *c);
-static void focusin(XEvent *e);
+static void focusin(XEvent *event);
 static void focusmon(const Arg *arg);
 static void focusstack(const Arg *arg);
 static void fullscreen(const Arg *arg);
@@ -205,17 +205,17 @@ static void grabbuttons(Client *c, int focused);
 static void grabkeys(void);
 static void grid(Monitor *m);
 static void incnmaster(const Arg *arg);
-static void keypress(XEvent *e);
+static void keypress(XEvent *event);
 static void killclient(const Arg *arg);
 static void manage(Window w, XWindowAttributes *wa);
-static void mappingnotify(XEvent *e);
-static void maprequest(XEvent *e);
+static void mappingnotify(XEvent *event);
+static void maprequest(XEvent *event);
 static void monocle(Monitor *m);
-static void motionnotify(XEvent *e);
+static void motionnotify(XEvent *event);
 static void movemouse(const Arg *arg);
 static Client *nexttiled(Client *c);
 static void pop(Client *c);
-static void propertynotify(XEvent *e);
+static void propertynotify(XEvent *event);
 static void quit(const Arg *arg);
 static Monitor *recttomon(int x, int y, int w, int h);
 static void removesystrayicon(Client *i);
@@ -223,7 +223,7 @@ static void resize(Client *c, int x, int y, int w, int h, int interact);
 static void resizebarwin(Monitor *m);
 static void resizeclient(Client *c, int x, int y, int w, int h);
 static void resizemouse(const Arg *arg);
-static void resizerequest(XEvent *e);
+static void resizerequest(XEvent *event);
 static void restack(Monitor *m);
 static void run(void);
 static void scan(void);
@@ -250,7 +250,7 @@ static void toggleview(const Arg *arg);
 static void freeicon(Client *c);
 static void unfocus(Client *c, int setfocus);
 static void unmanage(Client *c, int destroyed);
-static void unmapnotify(XEvent *e);
+static void unmapnotify(XEvent *event);
 static void updatebarpos(Monitor *m);
 static void updatebars(void);
 static void updateclientlist(void);
@@ -459,13 +459,13 @@ attachstack(Client *c)
 }
 
 void
-buttonpress(XEvent *e)
+buttonpress(XEvent *event)
 {
 	unsigned int i, x, click;
 	Arg arg = {0};
 	Client *c;
 	Monitor *m;
-	XButtonPressedEvent *ev = &e->xbutton;
+	XButtonPressedEvent *ev = &event->xbutton;
 
 	click = ClkRootWin;
 	/* focus monitor if necessary */
@@ -563,11 +563,11 @@ cleanupmon(Monitor *mon)
 }
 
 void
-clientmessage(XEvent *e)
+clientmessage(XEvent *event)
 {
 	XWindowAttributes wa;
 	XSetWindowAttributes swa;
-	XClientMessageEvent *cme = &e->xclient;
+	XClientMessageEvent *cme = &event->xclient;
 	Client *c = wintoclient(cme->window);
 
 	if (showsystray && cme->window == systray->win && cme->message_type == netatom[NetSystemTrayOP]) {
@@ -654,11 +654,11 @@ configure(Client *c)
 }
 
 void
-configurenotify(XEvent *e)
+configurenotify(XEvent *event)
 {
 	Monitor *m;
 	Client *c;
-	XConfigureEvent *ev = &e->xconfigure;
+	XConfigureEvent *ev = &event->xconfigure;
 	int dirty;
 
 	/* TODO: updategeom handling sucks, needs to be simplified */
@@ -682,11 +682,11 @@ configurenotify(XEvent *e)
 }
 
 void
-configurerequest(XEvent *e)
+configurerequest(XEvent *event)
 {
 	Client *c;
 	Monitor *m;
-	XConfigureRequestEvent *ev = &e->xconfigurerequest;
+	XConfigureRequestEvent *ev = &event->xconfigurerequest;
 	XWindowChanges wc;
 
 	if ((c = wintoclient(ev->window))) {
@@ -751,10 +751,10 @@ createmon(void)
 }
 
 void
-destroynotify(XEvent *e)
+destroynotify(XEvent *event)
 {
 	Client *c;
-	XDestroyWindowEvent *ev = &e->xdestroywindow;
+	XDestroyWindowEvent *ev = &event->xdestroywindow;
 
 	if ((c = wintoclient(ev->window)))
 		unmanage(c, 1);
@@ -992,11 +992,11 @@ drawbars(void)
 }
 
 void
-enternotify(XEvent *e)
+enternotify(XEvent *event)
 {
 	Client *c;
 	Monitor *m;
-	XCrossingEvent *ev = &e->xcrossing;
+	XCrossingEvent *ev = &event->xcrossing;
 
 	if ((ev->mode != NotifyNormal || ev->detail == NotifyInferior) && ev->window != root)
 		return;
@@ -1011,10 +1011,10 @@ enternotify(XEvent *e)
 }
 
 void
-expose(XEvent *e)
+expose(XEvent *event)
 {
 	Monitor *m;
-	XExposeEvent *ev = &e->xexpose;
+	XExposeEvent *ev = &event->xexpose;
 
 	if (ev->count == 0 && (m = wintomon(ev->window))) {
 		drawbar(m);
@@ -1050,9 +1050,9 @@ focus(Client *c)
 
 /* there are some broken focus acquiring clients needing extra handling */
 void
-focusin(XEvent *e)
+focusin(XEvent *event)
 {
-	XFocusChangeEvent *ev = &e->xfocus;
+	XFocusChangeEvent *ev = &event->xfocus;
 
 	if (selmon->sel && ev->window != selmon->sel->win)
 		setfocus(selmon->sel);
@@ -1372,13 +1372,13 @@ isuniquegeom(XineramaScreenInfo *unique, size_t n, XineramaScreenInfo *info)
 #endif /* XINERAMA */
 
 void
-keypress(XEvent *e)
+keypress(XEvent *event)
 {
 	unsigned int i;
 	KeySym keysym;
 	XKeyEvent *ev;
 
-	ev = &e->xkey;
+	ev = &event->xkey;
 	keysym = XKeycodeToKeysym(dpy, (KeyCode)ev->keycode, 0);
 	for (i = 0; i < LENGTH(keys); i++)
 		if (keysym == keys[i].keysym
@@ -1466,9 +1466,9 @@ manage(Window w, XWindowAttributes *wa)
 }
 
 void
-mappingnotify(XEvent *e)
+mappingnotify(XEvent *event)
 {
-	XMappingEvent *ev = &e->xmapping;
+	XMappingEvent *ev = &event->xmapping;
 
 	XRefreshKeyboardMapping(ev);
 	if (ev->request == MappingKeyboard)
@@ -1476,10 +1476,10 @@ mappingnotify(XEvent *e)
 }
 
 void
-maprequest(XEvent *e)
+maprequest(XEvent *event)
 {
 	static XWindowAttributes wa;
-	XMapRequestEvent *ev = &e->xmaprequest;
+	XMapRequestEvent *ev = &event->xmaprequest;
 	
         Client *i;
         if ((i = wintosystrayicon(ev->window))) {
@@ -1510,11 +1510,11 @@ monocle(Monitor *m)
 }
 
 void
-motionnotify(XEvent *e)
+motionnotify(XEvent *event)
 {
 	static Monitor *mon = NULL;
 	Monitor *m;
-	XMotionEvent *ev = &e->xmotion;
+	XMotionEvent *ev = &event->xmotion;
 
 	if (ev->window != root)
 		return;
@@ -1603,11 +1603,11 @@ pop(Client *c)
 }
 
 void
-propertynotify(XEvent *e)
+propertynotify(XEvent *event)
 {
 	Client *c;
 	Window trans;
-	XPropertyEvent *ev = &e->xproperty;
+	XPropertyEvent *ev = &event->xproperty;
 
 	if ((c = wintosystrayicon(ev->window))) {
 		if (ev->atom == XA_WM_NORMAL_HINTS) {
@@ -1777,9 +1777,9 @@ resizemouse(const Arg *arg)
 }
 
 void
-resizerequest(XEvent *e)
+resizerequest(XEvent *event)
 {
-	XResizeRequestEvent *ev = &e->xresizerequest;
+	XResizeRequestEvent *ev = &event->xresizerequest;
 	Client *i;
 
 	if ((i = wintosystrayicon(ev->window))) {
@@ -2285,10 +2285,10 @@ unmanage(Client *c, int destroyed)
 }
 
 void
-unmapnotify(XEvent *e)
+unmapnotify(XEvent *event)
 {
 	Client *c;
-	XUnmapEvent *ev = &e->xunmap;
+	XUnmapEvent *ev = &event->xunmap;
 
 	if ((c = wintoclient(ev->window))) {
 		if (ev->send_event)
