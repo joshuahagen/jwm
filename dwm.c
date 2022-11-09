@@ -804,7 +804,8 @@ dirtomon(int dir)
 }
 
 int
-drawstatusbar(Monitor *m, int bh, char* stext) {
+drawstatusbar(Monitor *m, int bh, char* stext) 
+{
 	int ret, i, w, x, len;
 	short isCode = 0;
 	char *text;
@@ -1383,9 +1384,7 @@ keypress(XEvent *event)
 	ev = &event->xkey;
 	keysym = XKeycodeToKeysym(dpy, (KeyCode)ev->keycode, 0);
 	for (i = 0; i < LENGTH(keys); i++)
-		if (keysym == keys[i].keysym
-		&& CLEANMASK(keys[i].mod) == CLEANMASK(ev->state)
-		&& keys[i].func)
+		if (keysym == keys[i].keysym && CLEANMASK(keys[i].mod) == CLEANMASK(ev->state) && keys[i].func)
 			keys[i].func(&(keys[i].arg));
 }
 
@@ -1485,7 +1484,8 @@ maprequest(XEvent *event)
 	
         Client *i;
         if ((i = wintosystrayicon(ev->window))) {
-                sendevent(i->win, netatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_WINDOW_ACTIVATE, 0, systray->win, XEMBED_EMBEDDED_VERSION);
+                sendevent(i->win, netatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_WINDOW_ACTIVATE, 0, 
+				systray->win, XEMBED_EMBEDDED_VERSION);
                 resizebarwin(selmon);
                 updatesystray();
         }
@@ -2722,7 +2722,8 @@ wintoclient(Window w)
 }
 
 Client *
-wintosystrayicon(Window w) {
+wintosystrayicon(Window w) 
+{
 	Client *i = NULL;
 
 	if (!showsystray || !w)
