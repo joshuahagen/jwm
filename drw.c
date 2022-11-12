@@ -6,6 +6,7 @@
 #include <X11/Xft/Xft.h>
 #include <Imlib2.h>
 
+#include "dwm.h"
 #include "drw.h"
 #include "util.h"
 
@@ -17,8 +18,7 @@ static const unsigned char utfmask[UTF_SIZ + 1] = {0xC0, 0x80, 0xE0, 0xF0, 0xF8}
 static const long utfmin[UTF_SIZ + 1] = {       0,    0,  0x80,  0x800,  0x10000};
 static const long utfmax[UTF_SIZ + 1] = {0x10FFFF, 0x7F, 0x7FF, 0xFFFF, 0x10FFFF};
 
-static long
-utf8decodebyte(const char c, size_t *i)
+static long utf8decodebyte(const char c, size_t *i)
 {
 	for (*i = 0; *i < (UTF_SIZ + 1); ++(*i))
 		if (((unsigned char)c & utfmask[*i]) == utfbyte[*i])
@@ -26,8 +26,7 @@ utf8decodebyte(const char c, size_t *i)
 	return 0;
 }
 
-static size_t
-utf8validate(long *u, size_t i)
+static size_t utf8validate(long *u, size_t i)
 {
 	if (!BETWEEN(*u, utfmin[i], utfmax[i]) || BETWEEN(*u, 0xD800, 0xDFFF))
 		*u = UTF_INVALID;
@@ -36,8 +35,7 @@ utf8validate(long *u, size_t i)
 	return i;
 }
 
-static size_t
-utf8decode(const char *c, long *u, size_t clen)
+static size_t utf8decode(const char *c, long *u, size_t clen)
 {
 	size_t i, j, len, type;
 	long udecoded;
@@ -61,10 +59,9 @@ utf8decode(const char *c, long *u, size_t clen)
 	return len;
 }
 
-Drw *
-drw_create(Display *dpy, int screen, Window root, unsigned int w, unsigned int h)
+drw_t *drw_create(Display *dpy, int screen, Window root, unsigned int w, unsigned int h)
 {
-	Drw *drw = ecalloc(1, sizeof(Drw));
+	drw_t *drw = ecalloc(1, sizeof(drw_t));
 
 	drw->dpy = dpy;
 	drw->screen = screen;
@@ -79,8 +76,7 @@ drw_create(Display *dpy, int screen, Window root, unsigned int w, unsigned int h
 	return drw;
 }
 
-void
-drw_resize(Drw *drw, unsigned int w, unsigned int h)
+void drw_resize(drw_t *drw, unsigned int w, unsigned int h)
 {
 	if (!drw)
 		return;
@@ -95,8 +91,7 @@ drw_resize(Drw *drw, unsigned int w, unsigned int h)
 	drw->picture = XRenderCreatePicture(drw->dpy, drw->drawable, XRenderFindVisualFormat(drw->dpy, DefaultVisual(drw->dpy, drw->screen)), 0, NULL);
 }
 
-void
-drw_free(Drw *drw)
+void drw_free(drw_t *drw)
 {
 	XRenderFreePicture(drw->dpy, drw->picture);
 	XFreePixmap(drw->dpy, drw->drawable);
@@ -108,10 +103,9 @@ drw_free(Drw *drw)
 /* This function is an implementation detail. Library users should use
  * drw_fontset_create instead.
  */
-static Fnt *
-xfont_create(Drw *drw, const char *fontname, FcPattern *fontpattern)
+static fnt_t *xfont_create(drw_t *drw, const char *fontname, FcPattern *fontpattern)
 {
-	Fnt *font;
+	fnt_t *font;
 	XftFont *xfont = NULL;
 	FcPattern *pattern = NULL;
 
@@ -139,7 +133,7 @@ xfont_create(Drw *drw, const char *fontname, FcPattern *fontpattern)
 		die("no font specified.");
 	}
 
-	font = ecalloc(1, sizeof(Fnt));
+	font = ecalloc(1, sizeof(fnt_t));
 	font->xfont = xfont;
 	font->pattern = pattern;
 	font->h = xfont->ascent + xfont->descent;
@@ -148,8 +142,7 @@ xfont_create(Drw *drw, const char *fontname, FcPattern *fontpattern)
 	return font;
 }
 
-static void
-xfont_free(Fnt *font)
+static void xfont_free(fnt_t *font)
 {
 	if (!font)
 		return;
@@ -159,10 +152,9 @@ xfont_free(Fnt *font)
 	free(font);
 }
 
-Fnt*
-drw_fontset_create(Drw* drw, const char *fonts[], size_t fontcount)
+fnt_t *drw_fontset_create(drw_t *drw, const char *fonts[], size_t fontcount)
 {
-	Fnt *cur, *ret = NULL;
+	fnt_t *cur, *ret = NULL;
 	size_t i;
 
 	if (!drw || !fonts)
@@ -177,8 +169,7 @@ drw_fontset_create(Drw* drw, const char *fonts[], size_t fontcount)
 	return (drw->fonts = ret);
 }
 
-void
-drw_fontset_free(Fnt *font)
+void drw_fontset_free(fnt_t *font)
 {
 	if (font) {
 		drw_fontset_free(font->next);
@@ -186,8 +177,7 @@ drw_fontset_free(Fnt *font)
 	}
 }
 
-void
-drw_clr_create(Drw *drw, Clr *dest, const char *clrname)
+void drw_clr_create(drw_t *drw, clr_t *dest, const char *clrname)
 {
 	if (!drw || !dest || !clrname)
 		return;
@@ -200,11 +190,10 @@ drw_clr_create(Drw *drw, Clr *dest, const char *clrname)
 
 /* Wrapper to create color schemes. The caller has to call free(3) on the
  * returned color scheme when done using it. */
-Clr *
-drw_scm_create(Drw *drw, const char *clrnames[], size_t clrcount)
+clr_t *drw_scm_create(drw_t *drw, const char *clrnames[], size_t clrcount)
 {
 	size_t i;
-	Clr *ret;
+	clr_t *ret;
 
 	/* need at least two colors for a scheme */
 	if (!drw || !clrnames || clrcount < 2 || !(ret = ecalloc(clrcount, sizeof(XftColor))))
@@ -215,22 +204,19 @@ drw_scm_create(Drw *drw, const char *clrnames[], size_t clrcount)
 	return ret;
 }
 
-void
-drw_setfontset(Drw *drw, Fnt *set)
+void drw_setfontset(drw_t *drw, fnt_t *set)
 {
 	if (drw)
 		drw->fonts = set;
 }
 
-void
-drw_setscheme(Drw *drw, Clr *scm)
+void drw_setscheme(drw_t *drw, clr_t *scm)
 {
 	if (drw)
 		drw->scheme = scm;
 }
 
-Picture
-drw_picture_create_resized(Drw *drw, char *src, unsigned int srcw, unsigned int srch, unsigned int dstw, unsigned int dsth) {
+Picture drw_picture_create_resized(drw_t *drw, char *src, unsigned int srcw, unsigned int srch, unsigned int dstw, unsigned int dsth) {
 	Pixmap pm;
 	Picture pic;
 	GC gc;
@@ -290,8 +276,7 @@ drw_picture_create_resized(Drw *drw, char *src, unsigned int srcw, unsigned int 
 	return pic;
 }
 
-void
-drw_rect(Drw *drw, int x, int y, unsigned int w, unsigned int h, int filled, int invert)
+void drw_rect(drw_t *drw, int x, int y, unsigned int w, unsigned int h, int filled, int invert)
 {
 	if (!drw || !drw->scheme)
 		return;
@@ -302,13 +287,12 @@ drw_rect(Drw *drw, int x, int y, unsigned int w, unsigned int h, int filled, int
 		XDrawRectangle(drw->dpy, drw->drawable, drw->gc, x, y, w - 1, h - 1);
 }
 
-int
-drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, unsigned int lpad, const char *text, int invert)
+int drw_text(drw_t *drw, int x, int y, unsigned int w, unsigned int h, unsigned int lpad, const char *text, int invert)
 {
 	int i, ty, ellipsis_x = 0;
 	unsigned int tmpw, ew, ellipsis_w = 0, ellipsis_len;
 	XftDraw *d = NULL;
-	Fnt *usedfont, *curfont, *nextfont;
+	fnt_t *usedfont, *curfont, *nextfont;
 	int utf8strlen, utf8charlen, render = x || y || w || h;
 	long utf8codepoint = 0;
 	const char *utf8str;
@@ -451,16 +435,14 @@ no_match:
 	return x + (render ? w : 0);
 }
 
-void
-drw_pic(Drw *drw, int x, int y, unsigned int w, unsigned int h, Picture pic)
+void drw_pic(drw_t *drw, int x, int y, unsigned int w, unsigned int h, Picture pic)
 {
 	if (!drw)
 		return;
 	XRenderComposite(drw->dpy, PictOpOver, pic, None, drw->picture, 0, 0, 0, 0, x, y, w, h);
 }
 
-void
-drw_map(Drw *drw, Window win, int x, int y, unsigned int w, unsigned int h)
+void drw_map(drw_t *drw, Window win, int x, int y, unsigned int w, unsigned int h)
 {
 	if (!drw)
 		return;
@@ -469,16 +451,14 @@ drw_map(Drw *drw, Window win, int x, int y, unsigned int w, unsigned int h)
 	XSync(drw->dpy, False);
 }
 
-unsigned int
-drw_fontset_getwidth(Drw *drw, const char *text)
+unsigned int drw_fontset_getwidth(drw_t *drw, const char *text)
 {
 	if (!drw || !drw->fonts || !text)
 		return 0;
 	return drw_text(drw, 0, 0, 0, 0, 0, text, 0);
 }
 
-unsigned int
-drw_fontset_getwidth_clamp(Drw *drw, const char *text, unsigned int n)
+unsigned int drw_fontset_getwidth_clamp(drw_t *drw, const char *text, unsigned int n)
 {
 	unsigned int tmp = 0;
 	if (drw && drw->fonts && text && n)
@@ -486,8 +466,7 @@ drw_fontset_getwidth_clamp(Drw *drw, const char *text, unsigned int n)
 	return MIN(n, tmp);
 }
 
-void
-drw_font_getexts(Fnt *font, const char *text, unsigned int len, unsigned int *w, unsigned int *h)
+void drw_font_getexts(fnt_t *font, const char *text, unsigned int len, unsigned int *w, unsigned int *h)
 {
 	XGlyphInfo ext;
 
@@ -501,12 +480,11 @@ drw_font_getexts(Fnt *font, const char *text, unsigned int len, unsigned int *w,
 		*h = font->h;
 }
 
-Cur *
-drw_cur_create(Drw *drw, int shape)
+cur_t *drw_cur_create(drw_t *drw, int shape)
 {
-	Cur *cur;
+	cur_t *cur;
 
-	if (!drw || !(cur = ecalloc(1, sizeof(Cur))))
+	if (!drw || !(cur = ecalloc(1, sizeof(cur_t))))
 		return NULL;
 
 	cur->cursor = XCreateFontCursor(drw->dpy, shape);
@@ -514,8 +492,7 @@ drw_cur_create(Drw *drw, int shape)
 	return cur;
 }
 
-void
-drw_cur_free(Drw *drw, Cur *cursor)
+void drw_cur_free(drw_t *drw, cur_t *cursor)
 {
 	if (!cursor)
 		return;
