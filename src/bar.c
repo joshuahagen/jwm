@@ -8,6 +8,7 @@
 #include "window.h"
 
 char stext[1024];
+static unsigned int tag_len = 0;
 
 void draw_bar(monitor_t *m)
 {
@@ -36,9 +37,11 @@ void draw_bar(monitor_t *m)
 	}
 	x = 0;
 	for (i = 0; i < LENGTH(tags); i++) {
-		/* check if tag is empty */
-		if (tags[i] == NULL)
+		/* ensure we only count the actual number of tags */
+		if (tags[i] == NULL) {
+			tag_len = i;
 			break;
+		}
 		w = TEXTW(tags[i]);
 		drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
 		drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
@@ -285,6 +288,11 @@ unsigned int get_sys_tray_width()
 	if(show_sys_tray)
 		for(i = sys_tray->icons; i; w += i->w + sys_tray_spacing, i = i->next) ;
 	return w ? w + sys_tray_spacing : 1;
+}
+
+unsigned int get_tag_len()
+{
+	return tag_len;
 }
 
 void remove_sys_tray_icon(client_t *i)

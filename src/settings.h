@@ -27,7 +27,7 @@ extern const int nmaster;
 extern const int resize_hints;
 
 extern const char *colors[2][3];
-extern const char* tags[9];
+extern const char* tags[30];
 extern const rule_t rules[12];
 extern const layout_t layouts[12];
 extern const _key_t keys[100];
