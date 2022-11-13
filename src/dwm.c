@@ -109,7 +109,7 @@ monitor_t *mons, *selmon;
 Window root, wm_check_win;
 
 /* configuration, allows nested code to access above variables */
-#include "config.h"
+#include "../config.h"
 
 /* compile-time check if all tags fit into an unsigned int bit array. */
 struct NumTags { char limitexceeded[LENGTH(tags) > 31 ? -1 : 1]; };

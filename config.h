@@ -1,7 +1,7 @@
 /* See LICENSE file for copyright and license details. */
 
 #include <X11/XF86keysym.h>
-#include "layout.h"
+#include "src/layout.h"
 
 /* appearance */
 const unsigned int border_px             = 2;        /* border pixel of windows */
@@ -21,8 +21,8 @@ const char dmenufont[]            	 = "Hack:size=12";
 static const char col_gray1[]            = "#222222";
 static const char col_gray2[]            = "#444444";
 static const char col_gray3[]            = "#bbbbbb";
-static const char col_gray4[]     	 = "#eeeeee";
-static const char col_cyan[]      	 = "#36454f";
+static const char col_gray4[]     	 = "#af7fcd";
+static const char col_cyan[]      	 = "#222222";
 
 const unsigned int icon_size      = 16;	    /* icon size */
 const unsigned int icon_spacing   = 5;	    /* space between icon and the window title */
