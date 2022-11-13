@@ -1,7 +1,7 @@
 # dwm
 A lightweight window manager written entirely in C. Everything is source based, and that includes the configuration.
 
-![status bar preview.](preview.png)
+![preview](preview.png)
 
 # Features
  - Lightweight
