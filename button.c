@@ -1,6 +1,8 @@
 #include "dwm.h"
 #include "button.h"
+#include "helpers.h"
 #include "keyboard.h"
+#include "settings.h"
 
 void grab_buttons(client_t *c, int focused)
 {

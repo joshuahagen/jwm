@@ -2,7 +2,9 @@
 #include <X11/Xatom.h>
 #include "dwm.h"
 #include "bar.h"
+#include "helpers.h"
 #include "monitor.h"
+#include "settings.h"
 #include "window.h"
 
 char stext[1024];

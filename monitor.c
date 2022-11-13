@@ -1,5 +1,7 @@
 #include "dwm.h"
+#include "helpers.h"
 #include "monitor.h"
+#include "settings.h"
 #include "window.h"
 
 void arrange_mon(monitor_t *m)

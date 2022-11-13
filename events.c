@@ -2,8 +2,10 @@
 #include "dwm.h"
 #include "bar.h"
 #include "events.h"
+#include "helpers.h"
 #include "keyboard.h"
 #include "monitor.h"
+#include "settings.h"
 #include "window.h"
 
 void button_press(XEvent *event)

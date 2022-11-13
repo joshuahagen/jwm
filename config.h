@@ -4,11 +4,11 @@
 #include "layout.h"
 
 /* appearance */
-const unsigned int border_px             = 3;        /* border pixel of windows */
-const unsigned int gap_px             	 = 3;	     /* gap between windows in tiling mode */
-const unsigned int snap    	 = 32;       /* snap pixel */
-const int showbar          	 = 1;        /* 0 means no bar */
-const int topbar           	 = 1;        /* 0 means bottom bar */
+const unsigned int border_px             = 2;        /* border pixel of windows */
+const unsigned int gap_px             	 = 6;	     /* gap between windows in tiling mode */
+const unsigned int snap    	 	 = 32;       /* snap pixel */
+const int showbar          	 	 = 1;        /* 0 means no bar */
+const int topbar           	 	 = 1;        /* 0 means bottom bar */
 const int topbar_padding	  	 = 12;       /* default spacing around the bars font */
 const int center_title		 	 = 1;        /* 0 means title is not centered */
 const unsigned int sys_tray_pinning 	 = 0;        /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
@@ -16,8 +16,8 @@ const unsigned int sys_tray_on_left      = 0;        /* 0: systray in the right 
 const unsigned int sys_tray_spacing 	 = 2;        /* systray spacing */
 const int sys_tray_pinning_fail_first    = 1;        /* 1: if pinning fails, display systray on the first monitor, False: display systray on the last monitor*/
 const int show_sys_tray        	         = 1;        /* 0 means no systray */
-const char *fonts[]               = { "Hack:size=12" };
-const char dmenufont[]            = "Hack:size=12";
+const char *fonts[]               	 = { "Hack:size=12" };
+const char dmenufont[]            	 = "Hack:size=12";
 static const char col_gray1[]            = "#222222";
 static const char col_gray2[]            = "#444444";
 static const char col_gray3[]            = "#bbbbbb";
@@ -34,7 +34,7 @@ const char *colors[][3]      = {
 };
 
 /* tagging */
-const char *tags[] = { "", "", "", "", "", "" };
+const char *tags[] = { "home", "www", "dev", "mus", "stocks", "sys" };
 
 const rule_t rules[] = {
 	/* xprop(1):
@@ -58,6 +58,8 @@ const layout_t layouts[] = {
 	{ "><>",      NULL },    /* no layout function means floating behavior */
 	{ "[M]",      monocle }, /* monocle is a full size window that overlapps */
 	{ "HHH",      grid },    /* grid like layout, will make every window the same size */
+	{ "[@]",	  spiral },
+	{ "[\\]",     dwindle },
 };
 
 /* key definitions */
@@ -96,6 +98,8 @@ const _key_t keys[] = {
 	{ MODKEY,			XK_g,			   set_layout,	   	{.v = &layouts[3]} },
 	{ MODKEY|ShiftMask,	        XK_f,			   fullscreen,	   	{0} },
 	{ MODKEY,                       XK_space,		   set_layout,      	{0} },
+	{ MODKEY,			XK_r,			   set_layout,          {.v = &layouts[4]} },
+	{ MODKEY|ShiftMask,	        XK_r,			   set_layout,		{.v = &layouts[5]} },
 	{ MODKEY|ShiftMask,             XK_space,		   toggle_floating,	{0} },
 	{ MODKEY,                       XK_0,			   view,            	{.ui = ~0 } },
 	{ MODKEY|ShiftMask,             XK_0,			   tag,            	{.ui = ~0 } },
@@ -115,7 +119,8 @@ const _key_t keys[] = {
     	{ MODKEY,                       XK_s,                      spawn,		SHCMD("~/.local/bin/dmenu_ss_region") },
 	{ 0,                            XF86XK_AudioRaiseVolume,   spawn,		SHCMD("amixer set Master 3%+; kill -44 $(pidof dwmblocks)") },
         { 0,                            XF86XK_AudioLowerVolume,   spawn,		SHCMD("amixer set Master 3%-; kill -44 $(pidof dwmblocks)") },
-        { 0,                            XF86XK_AudioNext,          spawn,		SHCMD("playerctl next smplayer") },
+	{ 0,				XF86XK_AudioMute,	   spawn,               SHCMD("amixer set Master toggle; kill -44 $(pidof dwmblocks)") },
+	{ 0,                            XF86XK_AudioNext,          spawn,		SHCMD("playerctl next smplayer") },
         { 0,                            XF86XK_AudioPrev,          spawn,		SHCMD("playerctl previous smplayer") },
         { 0,                            XF86XK_AudioStop,          spawn,		SHCMD("playerctl pause smplayer") },
         { 0,                            XF86XK_AudioPlay,          spawn,		SHCMD("playerctl play smplayer") },

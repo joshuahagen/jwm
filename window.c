@@ -2,8 +2,10 @@
 #include "dwm.h"
 #include "bar.h"
 #include "button.h"
+#include "helpers.h"
 #include "layout.h"
 #include "monitor.h"
+#include "settings.h"
 #include "window.h"
 
 void apply_rules(client_t *c)
@@ -732,7 +734,7 @@ void update_window_type(client_t *c)
 		c->isfloating = 1;
 }
 
-client_t * win_to_client(Window w)
+client_t *win_to_client(Window w)
 {
 	client_t *c;
 	monitor_t *m;

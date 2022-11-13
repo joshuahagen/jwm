@@ -47,6 +47,7 @@
 #include "bar.h"
 #include "button.h"
 #include "events.h"
+#include "helpers.h"
 #include "keyboard.h"
 #include "monitor.h"
 #include "window.h"

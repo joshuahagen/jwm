@@ -1,5 +1,7 @@
 #include "dwm.h"
+#include "helpers.h"
 #include "keyboard.h"
+#include "settings.h"
 
 unsigned int num_lock_mask = 0;
 
