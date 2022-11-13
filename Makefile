@@ -17,6 +17,8 @@ options:
 .c.o:
 	${CC} -c ${CFLAGS} $<
 
+VPATH=src
+
 ${OBJ}: config.h config.mk
 
 config.h:
