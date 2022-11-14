@@ -26,7 +26,7 @@ extern const float mfact;
 extern const int nmaster;   
 extern const int resize_hints;
 
-extern const char *colors[2][3];
+extern const char* colors[12][3];
 extern const char* tags[30];
 extern const rule_t rules[12];
 extern const layout_t layouts[12];

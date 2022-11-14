@@ -57,7 +57,7 @@ void draw_bar(monitor_t *m)
 
 	if ((w = m->ww - tw - stw - x) > bh) {
 		if (m->sel) {
-			drw_setscheme(drw, scheme[m == selmon ? SchemeSel : SchemeNorm]);
+			drw_setscheme(drw, scheme[m == selmon ? SchemeSelAlt : SchemeNorm]);
 
 			if (!center_title)
 				drw_text(drw, x, 0, w, bh, lrpad / 2 + (m->sel->icon ? m->sel->icw + icon_spacing : 0), m->sel->name, 0);
@@ -136,7 +136,7 @@ int draw_status_bar(monitor_t *m, int bh, char* stext)
 	ret = m->ww - w;
 	x = m->ww - w - get_sys_tray_width();
 
-	drw_setscheme(drw, scheme[LENGTH(colors)]);
+	drw_setscheme(drw, scheme[get_csm_len()]);
 	drw->scheme[ColFg] = scheme[SchemeNorm][ColFg];
 	drw->scheme[ColBg] = scheme[SchemeNorm][ColBg];
 	drw_rect(drw, x, 0, w, bh, 1, 1);

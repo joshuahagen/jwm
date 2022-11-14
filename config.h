@@ -10,7 +10,7 @@ const unsigned int snap    	 	 = 32;       /* snap pixel */
 const int showbar          	 	 = 1;        /* 0 means no bar */
 const int topbar           	 	 = 1;        /* 0 means bottom bar */
 const int topbar_padding	  	 = 12;       /* default spacing around the bars font */
-const int center_title		 	 = 1;        /* 0 means title is not centered */
+const int center_title		 	 = 0;        /* 0 means title is not centered */
 const unsigned int sys_tray_pinning 	 = 0;        /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
 const unsigned int sys_tray_on_left      = 0;        /* 0: systray in the right corner, >0: systray on left of status text */
 const unsigned int sys_tray_spacing 	 = 2;        /* systray spacing */
@@ -22,15 +22,18 @@ static const char col_gray1[]            = "#222222";
 static const char col_gray2[]            = "#444444";
 static const char col_gray3[]            = "#bbbbbb";
 static const char col_gray4[]     	 = "#af7fcd";
+static const char col_gray5[]		 = "#2F2F2F";
 static const char col_cyan[]      	 = "#222222";
+static const char col_blue[]		 = "#3099A1";
 
 const unsigned int icon_size      = 16;	    /* icon size */
 const unsigned int icon_spacing   = 5;	    /* space between icon and the window title */
 
-const char *colors[][3]      = {
+const char* colors[][3] = {
 	/*               fg         bg         border   */
 	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
 	[SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },
+	[SchemeSelAlt] = { col_gray4, col_gray5, col_cyan  }
 };
 
 /* tagging */

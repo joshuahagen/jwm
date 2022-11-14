@@ -24,6 +24,7 @@ extern clr_t **scheme;
 extern Atom wm_atom[WMLast], net_atom[NetLast], xatom[XLast];
 extern void (*handler[LASTEvent]) (XEvent *);
 
+int get_csm_len();
 int get_root_ptr(int *x, int *y);
 int get_text_prop(Window w, Atom atom, char *text, unsigned int size);
 uint32_t pre_alpha(uint32_t p);

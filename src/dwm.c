@@ -50,6 +50,7 @@
 #include "helpers.h"
 #include "keyboard.h"
 #include "monitor.h"
+#include "settings.h"
 #include "window.h"
 #include "dwm.h"
 
@@ -107,6 +108,7 @@ drw_t *drw;
 layout_t *last_layout;
 monitor_t *mons, *selmon;
 Window root, wm_check_win;
+static int csm_len = 0;
 
 /* configuration, allows nested code to access above variables */
 #include "../config.h"
@@ -149,7 +151,7 @@ void cleanup(void)
 
         for (i = 0; i < CurLast; i++)
 		drw_cur_free(drw, cursor[i]);
-	for (i = 0; i < LENGTH(colors) + 1; i++)
+	for (i = 0; i < get_csm_len() + 1; i++)
 		free(scheme[i]);
 	free(scheme);
 	XDestroyWindow(dpy, wm_check_win);
@@ -189,6 +191,11 @@ uint32_t pre_alpha(uint32_t p) {
 	uint32_t rb = (a * (p & 0xFF00FFu)) >> 8u;
 	uint32_t g = (a * (p & 0x00FF00u)) >> 8u;
 	return (rb & 0xFF00FFu) | (g & 0x00FF00u) | (a << 24u);
+}
+
+int get_csm_len()
+{
+	return csm_len;
 }
 
 int get_root_ptr(int *x, int *y)
@@ -354,11 +361,25 @@ void setup(void)
 	cursor[CurNormal] = drw_cur_create(drw, XC_left_ptr);
 	cursor[CurResize] = drw_cur_create(drw, XC_sizing);
 	cursor[CurMove] = drw_cur_create(drw, XC_fleur);
-	
+
 	/* init appearance */
-	scheme = ecalloc(LENGTH(colors) + 1, sizeof(clr_t *));
-	scheme[LENGTH(colors)] = drw_scm_create(drw, colors[0], 3);
-	for (i = 0; i < LENGTH(colors); i++)
+	/* loop through length of colors array until we hit (null) */
+	int exit = 0;
+	for (i = 0; i < LENGTH(colors); ++i) {
+		for (int j = 0; j < 3; ++j) {
+			if (colors[i][j] == NULL) {
+				exit = 1;
+				csm_len = i;
+				break;
+			}
+		}
+		if (exit)
+			break;
+	}
+
+	scheme = ecalloc(csm_len + 1, sizeof(clr_t *));
+	scheme[csm_len] = drw_scm_create(drw, colors[0], 3);
+	for (i = 0; i < csm_len; i++)
 		scheme[i] = drw_scm_create(drw, colors[i], 3);
 	
 	/* init system tray */
