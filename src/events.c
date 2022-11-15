@@ -27,8 +27,8 @@ void button_press(XEvent *event)
 		i = x = 0;
 		do 
 			x += TEXTW(tags[i]);
-		while (ev->x >= x && ++i < get_tag_len());
-		if (i < get_tag_len()) {
+		while (ev->x >= x && ++i < tag_len);
+		if (i < tag_len) {
 			click = ClkTagBar;
 			arg.ui = 1 << i;
 		} else if (ev->x < x + TEXTW(selmon->ltsymbol))

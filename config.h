@@ -5,7 +5,7 @@
 
 /* appearance */
 const unsigned int border_px             = 2;        /* border pixel of windows */
-const unsigned int gap_px             	 = 6;	     /* gap between windows in tiling mode */
+const unsigned int gap_px             	 = 4;	     /* gap between windows in tiling mode */
 const unsigned int snap    	 	 = 32;       /* snap pixel */
 const int showbar          	 	 = 1;        /* 0 means no bar */
 const int topbar           	 	 = 1;        /* 0 means bottom bar */

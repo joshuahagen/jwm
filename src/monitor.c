@@ -97,7 +97,8 @@ void send_mon(client_t *c, monitor_t *m)
 	arrange(NULL);
 }
 
-monitor_t *sys_tray_to_mon(monitor_t *m) {
+monitor_t *sys_tray_to_mon(monitor_t *m) 
+{
 	monitor_t *t;
 	int i, n;
 	if(!sys_tray_pinning) {

@@ -118,8 +118,8 @@ typedef struct {
 	int monitor;
 } rule_t;
 
-typedef struct Systray   Systray;
-struct Systray {
+typedef struct sys_tray sys_tray_t;
+struct sys_tray {
 	Window win;
 	client_t *icons;
 };

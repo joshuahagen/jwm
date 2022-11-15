@@ -5,10 +5,7 @@
 #include "settings.h"
 #include "window.h"
 
-/* function declaractions */
 static void fibonacci(monitor_t *mon, int s);
-/* variables */
-static layout_t *last_layout;
 
 void dwindle(monitor_t *mon) 
 {
@@ -79,6 +76,8 @@ static void fibonacci(monitor_t *mon, int s)
 
 void fullscreen(const arg_t *arg)
 {
+	static layout_t *last_layout;
+
 	if (selmon->showbar) {
 		for(last_layout = (layout_t *)layouts; last_layout != selmon->lt[selmon->sellt]; last_layout++);
 		set_layout(&((arg_t) { .v = &layouts[2] }));

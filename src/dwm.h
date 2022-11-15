@@ -8,9 +8,8 @@
 #include "util.h"
 
 /* variables */
-extern char stext[1024];
 extern int lrpad;
-extern Systray *sys_tray;
+extern sys_tray_t *sys_tray;
 extern const char broken[];
 extern int screen;
 extern int sw, sh;             
@@ -21,10 +20,10 @@ extern drw_t *drw;
 extern monitor_t *mons, *selmon;
 extern Window root, wm_check_win;
 extern clr_t **scheme;
+extern int scm_len;
 extern Atom wm_atom[WMLast], net_atom[NetLast], xatom[XLast];
 extern void (*handler[LASTEvent]) (XEvent *);
 
-int get_csm_len();
 int get_root_ptr(int *x, int *y);
 int get_text_prop(Window w, Atom atom, char *text, unsigned int size);
 uint32_t pre_alpha(uint32_t p);

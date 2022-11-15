@@ -8,7 +8,7 @@
 #include "window.h"
 
 char stext[1024];
-static unsigned int tag_len = 0;
+int tag_len = 0;
 
 void draw_bar(monitor_t *m)
 {
@@ -136,7 +136,7 @@ int draw_status_bar(monitor_t *m, int bh, char* stext)
 	ret = m->ww - w;
 	x = m->ww - w - get_sys_tray_width();
 
-	drw_setscheme(drw, scheme[get_csm_len()]);
+	drw_setscheme(drw, scheme[scm_len]);
 	drw->scheme[ColFg] = scheme[SchemeNorm][ColFg];
 	drw->scheme[ColBg] = scheme[SchemeNorm][ColBg];
 	drw_rect(drw, x, 0, w, bh, 1, 1);
@@ -290,11 +290,6 @@ unsigned int get_sys_tray_width()
 	return w ? w + sys_tray_spacing : 1;
 }
 
-unsigned int get_tag_len()
-{
-	return tag_len;
-}
-
 void remove_sys_tray_icon(client_t *i)
 {
 	client_t **ii;
@@ -403,7 +398,7 @@ void update_sys_tray(void)
 		x -= sw + lrpad / 2;
 	if (!sys_tray) {
 		/* init sys_tray */
-		if (!(sys_tray = (Systray *)calloc(1, sizeof(sys_tray))))
+		if (!(sys_tray = (sys_tray_t *)calloc(1, sizeof(sys_tray))))
 			die("fatal: could not malloc() %u bytes\n", sizeof(sys_tray));
 		sys_tray->win = XCreateSimpleWindow(dpy, root, x, m->by, w, bh, 0, 0, scheme[SchemeSel][ColBg].pixel);
 		wa.event_mask        = ButtonPressMask | ExposureMask;

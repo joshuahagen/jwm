@@ -75,7 +75,7 @@ static int xerror_start(Display *dpy, XErrorEvent *ee);
 static void zoom(const arg_t *arg);
 
 /* variables */
-Systray *sys_tray = NULL;
+sys_tray_t *sys_tray = NULL;
 const char broken[] = "broken";
 int screen;
 int sw, sh;           /* X display screen geometry width, height */
@@ -103,12 +103,12 @@ Atom wm_atom[WMLast], net_atom[NetLast], xatom[XLast];
 int running = 1;
 cur_t *cursor[CurLast];
 clr_t **scheme;
+int scm_len = 0;
 Display *dpy;
 drw_t *drw;
 layout_t *last_layout;
 monitor_t *mons, *selmon;
 Window root, wm_check_win;
-static int csm_len = 0;
 
 /* configuration, allows nested code to access above variables */
 #include "../config.h"
@@ -151,7 +151,7 @@ void cleanup(void)
 
         for (i = 0; i < CurLast; i++)
 		drw_cur_free(drw, cursor[i]);
-	for (i = 0; i < get_csm_len() + 1; i++)
+	for (i = 0; i < scm_len + 1; i++)
 		free(scheme[i]);
 	free(scheme);
 	XDestroyWindow(dpy, wm_check_win);
@@ -186,16 +186,12 @@ void focus_stack(const arg_t *arg)
 	}
 }
 
-uint32_t pre_alpha(uint32_t p) {
+uint32_t pre_alpha(uint32_t p) 
+{
 	uint8_t a = p >> 24u;
 	uint32_t rb = (a * (p & 0xFF00FFu)) >> 8u;
 	uint32_t g = (a * (p & 0x00FF00u)) >> 8u;
 	return (rb & 0xFF00FFu) | (g & 0x00FF00u) | (a << 24u);
-}
-
-int get_csm_len()
-{
-	return csm_len;
 }
 
 int get_root_ptr(int *x, int *y)
@@ -369,7 +365,7 @@ void setup(void)
 		for (int j = 0; j < 3; ++j) {
 			if (colors[i][j] == NULL) {
 				exit = 1;
-				csm_len = i;
+				scm_len = i;
 				break;
 			}
 		}
@@ -377,9 +373,9 @@ void setup(void)
 			break;
 	}
 
-	scheme = ecalloc(csm_len + 1, sizeof(clr_t *));
-	scheme[csm_len] = drw_scm_create(drw, colors[0], 3);
-	for (i = 0; i < csm_len; i++)
+	scheme = ecalloc(scm_len + 1, sizeof(clr_t *));
+	scheme[scm_len] = drw_scm_create(drw, colors[0], 3);
+	for (i = 0; i < scm_len; i++)
 		scheme[i] = drw_scm_create(drw, colors[i], 3);
 	
 	/* init system tray */
@@ -595,23 +591,20 @@ int xerror(Display *dpy, XErrorEvent *ee)
 	return xerrorxlib(dpy, ee); /* may call exit */
 }
 
-int
-xerror_dummy(Display *dpy, XErrorEvent *ee)
+int xerror_dummy(Display *dpy, XErrorEvent *ee)
 {
 	return 0;
 }
 
 /* Startup Error handler to check if another window manager
  * is already running. */
-int
-xerror_start(Display *dpy, XErrorEvent *ee)
+int xerror_start(Display *dpy, XErrorEvent *ee)
 {
 	die("dwm: another window manager is already running");
 	return -1;
 }
 
-void
-zoom(const arg_t *arg)
+void zoom(const arg_t *arg)
 {
 	client_t *c = selmon->sel;
 
@@ -622,8 +615,7 @@ zoom(const arg_t *arg)
 	pop(c);
 }
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	if (argc == 2 && !strcmp("-v", argv[1]))
 		die("dwm-"VERSION);
