@@ -12,7 +12,7 @@
 #define MOUSE_MASK               (BUTTON_MASK|PointerMotionMask)
 #define WIDTH(X)                ((X)->w + 2 * (X)->bw + gap_px)
 #define HEIGHT(X)               ((X)->h + 2 * (X)->bw + gap_px)
-#define TAG_MASK                 ((1 << LENGTH(tags)) - 1)
+#define TAG_MASK                 ((1 << tag_len) - 1)
 #define SYSTEM_TRAY_REQUEST_DOCK    0
 
 /* XEMBED messages */
