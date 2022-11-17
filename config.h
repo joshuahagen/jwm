@@ -5,7 +5,7 @@
 
 /* appearance */
 const unsigned int border_px             = 2;        /* border pixel of windows */
-const unsigned int gap_px             	 = 4;	     /* gap between windows in tiling mode */
+const unsigned int gap_px             	 = 5;	     /* gap between windows in tiling mode */
 const unsigned int snap    	 	 = 32;       /* snap pixel */
 const int showbar          	 	 = 1;        /* 0 means no bar */
 const int topbar           	 	 = 1;        /* 0 means bottom bar */
@@ -32,8 +32,8 @@ const unsigned int icon_spacing   = 5;	    /* space between icon and the window 
 const char* colors[][3] = {
 	/*               fg         bg         border   */
 	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
-	[SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },
-	[SchemeSelAlt] = { col_gray4, col_gray5, col_cyan  }
+	[SchemeSel]  = { col_gray4, col_cyan,  col_gray4 },
+	[SchemeSelAlt] = { col_gray4, col_gray5, col_cyan }
 };
 
 /* tagging */
@@ -112,6 +112,7 @@ const _key_t keys[] = {
 	{ MODKEY|ShiftMask,             XK_period,		   tag_mon,         	{.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_F1,                     spawn,          	SHCMD("~/.local/bin/shutdown") },
         { MODKEY|ShiftMask,             XK_F5,                     spawn,          	SHCMD("~/.local/bin/dmenu_set_wallpaper") },
+	{ MODKEY|ShiftMask,		XK_F6,			   spawn,               SHCMD("~/.local/bin/dmenu_dotfiles") },
         { MODKEY|ShiftMask,             XK_w,                      spawn,		SHCMD("firefox-bin") },
 	{ MODKEY|ShiftMask,		XK_h,			   spawn,		{.v = (const char*[]){ "st", "-e", "htop", NULL } } },
 	{ MODKEY|ShiftMask,   		XK_l,			   spawn,		SHCMD("libreoffice") },

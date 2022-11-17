@@ -405,15 +405,8 @@ void resize_client(client_t *c, int x, int y, int w, int h)
 	if (c->isfloating || c->mon->lt[c->mon->sellt]->arrange == NULL) {
 		gapincr = gapoffset = 0;
 	} else {
-		/* Remove border and gap if layout is monocle or only one client_t */
-		if (c->mon->lt[c->mon->sellt]->arrange == monocle || n == 1) {
-			gapoffset = 0;
-			gapincr = -2 * border_px;
-			wc.border_width = 0;
-		} else {
-			gapoffset = gap_px;
-			gapincr = 2 * gap_px;
-		}
+		gapoffset = gap_px;
+		gapincr = 2 * gap_px;
 	}
 
 	c->oldx = c->x; c->x = wc.x = x + gapoffset;
