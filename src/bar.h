@@ -1,6 +1,7 @@
 #ifndef BAR_H
 #define BAR_H
 
+extern int sp, vp;
 extern char stext[1024];
 extern int tag_len;
 

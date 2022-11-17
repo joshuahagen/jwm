@@ -7,6 +7,7 @@
 #include "settings.h"
 #include "window.h"
 
+int sp, vp;
 char stext[1024];
 int tag_len = 0;
 
@@ -60,12 +61,12 @@ void draw_bar(monitor_t *m)
 			drw_setscheme(drw, scheme[m == selmon ? SchemeSelAlt : SchemeNorm]);
 
 			if (!center_title)
-				drw_text(drw, x, 0, w, bh, lrpad / 2 + (m->sel->icon ? m->sel->icw + icon_spacing : 0), m->sel->name, 0);
+				drw_text(drw, x, 0, w - 2 * sp, bh, lrpad / 2 + (m->sel->icon ? m->sel->icw + icon_spacing : 0), m->sel->name, 0);
 			else {
 				if (TEXTW(m->sel->name) > w) /* title is bigger than the width of the title rectangle, don't center */
-					drw_text(drw, x, 0, w, bh, lrpad / 2, m->sel->name, 0);
+					drw_text(drw, x, 0, w - 2 * sp, bh, lrpad / 2, m->sel->name, 0);
 				else /* center window title */
-					drw_text(drw, x, 0, w, bh, (w - TEXTW(m->sel->name)) / 2, m->sel->name, 0);
+					drw_text(drw, x, 0, w - 2 * sp, bh, (w - TEXTW(m->sel->name)) / 2, m->sel->name, 0);
 			}
 			if (m->sel->icon) {
 				if (!center_title)
@@ -80,7 +81,7 @@ void draw_bar(monitor_t *m)
 			}
 		} else {
 			drw_setscheme(drw, scheme[SchemeNorm]);
-			drw_rect(drw, x, 0, w, bh, 1, 1);
+			drw_rect(drw, x, 0, w - 2 * sp, bh, 1, 1);
 		}
 	}
 	drw_map(drw, m->barwin, 0, 0, m->ww - stw, bh);
@@ -150,7 +151,7 @@ int draw_status_bar(monitor_t *m, int bh, char* stext)
 
 			text[i] = '\0';
 			w = TEXTW(text) - lrpad;
-			drw_text(drw, x, 0, w, bh, 0, text, 0);
+			drw_text(drw, x - 2 * sp, 0, w, bh, 0, text, 0);
 
 			x += w;
 
@@ -194,7 +195,7 @@ int draw_status_bar(monitor_t *m, int bh, char* stext)
 
 	if (!isCode) {
 		w = TEXTW(text) - lrpad;
-		drw_text(drw, x, 0, w, bh, 0, text, 0);
+		drw_text(drw, x - 2 * sp, 0, w, bh, 0, text, 0);
 	}
 
 	drw_setscheme(drw, scheme[SchemeNorm]);
@@ -307,7 +308,7 @@ void resize_bar_win(monitor_t *m)
 	unsigned int w = m->ww;
 	if (show_sys_tray && m == sys_tray_to_mon(m) && !sys_tray_on_left)
 		w -= get_sys_tray_width();
-	XMoveResizeWindow(dpy, m->barwin, m->wx, m->by, w, bh);
+	XMoveResizeWindow(dpy, m->barwin, m->wx + sp, m->by + vp, w - 2 * sp, bh);
 }
 
 void toggle_bar(const arg_t *arg)
@@ -345,7 +346,7 @@ void update_bars(void)
 		w = m->ww;
 		if (show_sys_tray && m == sys_tray_to_mon(m))
 			w -= get_sys_tray_width();
-		m->barwin = XCreateWindow(dpy, root, m->wx, m->by, w, bh, 0, DefaultDepth(dpy, screen),
+		m->barwin = XCreateWindow(dpy, root, m->wx + sp, m->by + vp, w - 2 * sp, bh, 0, DefaultDepth(dpy, screen),
 				CopyFromParent, DefaultVisual(dpy, screen),
 				CWOverrideRedirect|CWBackPixmap|CWEventMask, &wa);
 		XDefineCursor(dpy, m->barwin, cursor[CurNormal]->cursor);
@@ -361,11 +362,11 @@ void update_bar_pos(monitor_t *m)
 	m->wy = m->my;
 	m->wh = m->mh;
 	if (m->showbar) {
-		m->wh -= bh;
-		m->by = m->topbar ? m->wy : m->wy + m->wh;
-		m->wy = m->topbar ? m->wy + bh : m->wy;
+		m->wh = m->wh - vert_pad - bh;
+		m->by = m->topbar ? m->wy : m->wy + m->wh + vert_pad;
+		m->wy = m->topbar ? m->wy + bh + vp : m->wy;
 	} else
-		m->by = -bh;
+		m->by = -bh - vp;
 }
 
 void update_icon(client_t *c)
@@ -388,7 +389,8 @@ void update_sys_tray(void)
 	XWindowChanges wc;
 	client_t *i;
 	monitor_t *m = sys_tray_to_mon(NULL);
-	unsigned int x = m->mx + m->mw;
+	unsigned int x = m->mx + m->mw - sp;
+	unsigned int y = m->by + vp;
 	unsigned int sw = TEXTW(stext) - lrpad + sys_tray_spacing;
 	unsigned int w = 1;
 
@@ -400,7 +402,7 @@ void update_sys_tray(void)
 		/* init sys_tray */
 		if (!(sys_tray = (sys_tray_t *)calloc(1, sizeof(sys_tray))))
 			die("fatal: could not malloc() %u bytes\n", sizeof(sys_tray));
-		sys_tray->win = XCreateSimpleWindow(dpy, root, x, m->by, w, bh, 0, 0, scheme[SchemeSel][ColBg].pixel);
+		sys_tray->win = XCreateSimpleWindow(dpy, root, x, y, w, bh, 0, 0, scheme[SchemeSel][ColBg].pixel);
 		wa.event_mask        = ButtonPressMask | ExposureMask;
 		wa.override_redirect = True;
 		wa.background_pixel  = scheme[SchemeNorm][ColBg].pixel;
@@ -435,8 +437,8 @@ void update_sys_tray(void)
 	}
 	w = w ? w + sys_tray_spacing : 1;
 	x -= w;
-	XMoveResizeWindow(dpy, sys_tray->win, x, m->by, w, bh);
-	wc.x = x; wc.y = m->by; wc.width = w; wc.height = bh;
+	XMoveResizeWindow(dpy, sys_tray->win, x, y, w, bh);
+	wc.x = x; wc.y = y; wc.width = w; wc.height = bh;
 	wc.stack_mode = Above; wc.sibling = m->barwin;
 	XConfigureWindow(dpy, sys_tray->win, CWX|CWY|CWWidth|CWHeight|CWSibling|CWStackMode, &wc);
 	XMapWindow(dpy, sys_tray->win);

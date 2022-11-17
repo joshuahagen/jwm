@@ -405,8 +405,8 @@ void resize_client(client_t *c, int x, int y, int w, int h)
 	if (c->isfloating || c->mon->lt[c->mon->sellt]->arrange == NULL) {
 		gapincr = gapoffset = 0;
 	} else {
-		gapoffset = gap_px;
-		gapincr = 2 * gap_px;
+		gapoffset = gap_px + vp;
+		gapincr = 2 * (gap_px + vp);
 	}
 
 	c->oldx = c->x; c->x = wc.x = x + gapoffset;

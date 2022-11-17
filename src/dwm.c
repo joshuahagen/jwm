@@ -328,6 +328,8 @@ void setup(void)
 	lrpad = drw->fonts->h;
 	bh = drw->fonts->h + topbar_padding;
 	update_geom();
+	sp = side_pad;
+	vp = (topbar == 1) ? vert_pad : - vert_pad;
 	
 	/* init atoms */
 	utf8string = XInternAtom(dpy, "UTF8_STRING", False);
@@ -384,6 +386,7 @@ void setup(void)
 	/* init bars */
 	update_bars();
 	update_status();
+	update_bar_pos(selmon);
 	
 	/* supporting window for NetWMCheck */
 	wm_check_win = XCreateSimpleWindow(dpy, root, 0, 0, 1, 1, 0, 0, 0);
