@@ -5,13 +5,13 @@
 
 /* appearance */
 const unsigned int border_px             = 2;        /* border pixel of windows */
-const unsigned int gap_px             	 = 8;	     /* gap between windows in tiling mode */
+const unsigned int gap_px             	 = 5;	     /* gap between windows in tiling mode */
 const unsigned int snap    	 	 = 32;       /* snap pixel */
 const int showbar          	 	 = 1;        /* 0 means no bar */
 const int topbar           	 	 = 1;        /* 0 means bottom bar */
 const int topbar_padding	  	 = 12;       /* default spacing around the bars font */
-const int vert_pad			     = 5;		
-const int side_pad				 = 5;
+const int vert_pad			 = 5;		
+const int side_pad		         = 10;
 const int center_title		 	 = 0;        /* 0 means title is not centered */
 const unsigned int sys_tray_pinning 	 = 0;        /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
 const unsigned int sys_tray_on_left      = 0;        /* 0: systray in the right corner, >0: systray on left of status text */
