@@ -96,7 +96,7 @@ void (*handler[LASTEvent]) (XEvent *) = {
 	[MapRequest] = map_request,
 	[MotionNotify] = motion_notify,
 	[PropertyNotify] = property_notify,
-    [ResizeRequest] = resize_request,
+        [ResizeRequest] = resize_request,
 	[UnmapNotify] = unmap_notify
 };
 Atom wm_atom[WMLast], net_atom[NetLast], xatom[XLast];
@@ -289,6 +289,41 @@ void scan(void)
 		if (wins)
 			XFree(wins);
 	}
+}
+
+int send_event(Window w, Atom proto, int mask, long d0, long d1, long d2, long d3, long d4)
+{
+	int n;
+	Atom *protocols, mt;
+	int exists = 0;
+	XEvent ev;
+
+	if (proto == wm_atom[WMTakeFocus] || proto == wm_atom[WMDelete]) {
+		mt = wm_atom[WMProtocols];
+		if (XGetWMProtocols(dpy, w, &protocols, &n)) {
+			while (!exists && n--)
+				exists = protocols[n] == proto;
+			XFree(protocols);
+		}
+	}
+	else {
+		exists = True;
+		mt = proto;
+    	}
+
+	if (exists) {
+		ev.type = ClientMessage;
+		ev.xclient.window = w;
+		ev.xclient.message_type = mt;
+		ev.xclient.format = 32;
+		ev.xclient.data.l[0] = d0;
+		ev.xclient.data.l[1] = d1;
+		ev.xclient.data.l[2] = d2;
+		ev.xclient.data.l[3] = d3;
+		ev.xclient.data.l[4] = d4;
+		XSendEvent(dpy, w, False, mask, &ev);
+	}
+	return exists;
 }
 
 /* arg > 1.0 will set mfact absolutely */

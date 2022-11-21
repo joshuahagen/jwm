@@ -17,7 +17,7 @@ void spiral(monitor_t *mon)
 	fibonacci(mon, 0);
 }
 
-static void fibonacci(monitor_t *mon, int s) 
+void fibonacci(monitor_t *mon, int s) 
 {
 	unsigned int i, n, nx, ny, nw, nh;
 	client_t *c;

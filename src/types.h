@@ -45,7 +45,8 @@ struct client {
 	int bw, oldbw;
 	unsigned int tags;
 	int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen;
-	unsigned int icw, ich; Picture icon;
+	unsigned int icw, ich; 
+	Picture icon;
 	client_t *next;
 	client_t *snext;
 	monitor_t *mon;

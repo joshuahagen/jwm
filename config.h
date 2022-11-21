@@ -10,7 +10,7 @@ const unsigned int snap    	 	 = 32;       /* snap pixel */
 const int showbar          	 	 = 1;        /* 0 means no bar */
 const int topbar           	 	 = 1;        /* 0 means bottom bar */
 const int topbar_padding	  	 = 12;       /* default spacing around the bars font */
-const int vert_pad			 = 5;		
+const int vert_pad			 = 6;		
 const int side_pad		         = 10;
 const int center_title		 	 = 0;        /* 0 means title is not centered */
 const unsigned int sys_tray_pinning 	 = 0;        /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
@@ -20,26 +20,28 @@ const int sys_tray_pinning_fail_first    = 1;        /* 1: if pinning fails, dis
 const int show_sys_tray        	         = 1;        /* 0 means no systray */
 const char *fonts[]               	 = { "Hack:size=12" };
 const char dmenufont[]            	 = "Hack:size=12";
+/* color definitions 			   hex code */
 static const char col_gray1[]            = "#222222";
 static const char col_gray2[]            = "#444444";
 static const char col_gray3[]            = "#bbbbbb";
-static const char col_gray4[]     	 = "#af7fcd";
 static const char col_gray5[]		 = "#2F2F2F";
 static const char col_cyan[]      	 = "#222222";
 static const char col_blue[]		 = "#3099A1";
-
+static const char col_purple[]     	 = "#af7fcd";
+/* end color definitions */
 const unsigned int icon_size      = 16;	    /* icon size */
 const unsigned int icon_spacing   = 5;	    /* space between icon and the window title */
 
+/* color schemes, modify this to change most colors */
 const char* colors[][3] = {
 	/*               fg         bg         border   */
 	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
-	[SchemeSel]  = { col_gray4, col_cyan,  col_gray4 },
+	[SchemeSel]  = { col_purple, col_cyan,  col_purple },
 	[SchemeSelAlt] = { col_gray3, col_gray5, col_cyan }
 };
 
 /* tagging */
-const char *tags[] = { "home", "www", "dev", "mus", "stocks", "sys" };
+const char *tags[] = { "", "", "", "", "" };
 
 const rule_t rules[] = {
 	/* xprop(1):
@@ -54,8 +56,8 @@ const rule_t rules[] = {
 /* layout(s) */
 const float mfact             = 0.50;   /* factor of master area size [0.05..0.95] */
 const int nmaster             = 1;      /* number of clients in master area */
-const int resize_hints       	     = 0;      /* 1 means respect size hints in tiled resizals */
-const int lock_full_screen    = 1; /* 1 will force focus on the fullscreen window */
+const int resize_hints        = 0;      /* 1 means respect size hints in tiled resizals */
+const int lock_full_screen    = 1;      /* 1 will force focus on the fullscreen window */
 
 const layout_t layouts[] = {
 	/* symbol     arrange function */
@@ -63,8 +65,8 @@ const layout_t layouts[] = {
 	{ "><>",      NULL },    /* no layout function means floating behavior */
 	{ "[M]",      monocle }, /* monocle is a full size window that overlapps */
 	{ "HHH",      grid },    /* grid like layout, will make every window the same size */
-	{ "[@]",	  spiral },
-	{ "[\\]",     dwindle },
+	{ "[@]",      spiral },  /* spiral windows inward */
+	{ "[\\]",     dwindle }, /* dwindle windows similar to bspwm's default tiling mechanism */
 };
 
 /* key definitions */
@@ -80,9 +82,10 @@ const layout_t layouts[] = {
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
+static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_purple, NULL };
 static const char *termcmd[]  = { "st", NULL };
 
+/* keyboard hotkeys */
 const _key_t keys[] = {
 	/* modifier                     key			   function        argument */
 	{ MODKEY,                       XK_p,			   spawn,          	{.v = dmenucmd } },
@@ -150,9 +153,9 @@ const button_t buttons[] = {
 	{ ClkLtSymbol,          0,              Button3,        set_layout,      {.v = &layouts[2]} },
 	{ ClkWinTitle,          0,              Button2,        zoom,            {0} },
 	{ ClkStatusText,	0,		Button2,	spawn,		 {.v = termcmd } },
-	{ ClkClientWin,         MODKEY,         Button1,        move_mouse,      {0} },
+	{ ClkClientWin,         MODKEY,         Button1,        window_move_mouse,      {0} },
 	{ ClkClientWin,         MODKEY,         Button2,        toggle_floating, {0} },
-	{ ClkClientWin,         MODKEY,         Button3,        resize_mouse,    {0} },
+	{ ClkClientWin,         MODKEY,         Button3,        window_resize_mouse,    {0} },
 	{ ClkTagBar,            0,              Button1,        view,            {0} },
 	{ ClkTagBar,            0,              Button3,        toggle_view,     {0} },
 	{ ClkTagBar,            MODKEY,         Button1,        tag,             {0} },

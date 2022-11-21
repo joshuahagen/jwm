@@ -317,7 +317,7 @@ void manage(Window w, XWindowAttributes *wa)
 	focus(NULL);
 }
 
-void move_mouse(const arg_t *arg)
+void window_move_mouse(const arg_t *arg)
 {
 	int x, y, ocx, ocy, nx, ny;
 	client_t *c;
@@ -352,6 +352,7 @@ void move_mouse(const arg_t *arg)
 
 			nx = ocx + (ev.xmotion.x - x);
 			ny = ocy + (ev.xmotion.y - y);
+
 			if (abs(selmon->wx - nx) < snap)
 				nx = selmon->wx;
 			else if (abs((selmon->wx + selmon->ww) - (nx + WIDTH(c))) < snap)
@@ -419,7 +420,7 @@ void resize_client(client_t *c, int x, int y, int w, int h)
 	XSync(dpy, False);
 }
 
-void resize_mouse(const arg_t *arg)
+void window_resize_mouse(const arg_t *arg)
 {
 	int ocx, ocy, nw, nh;
 	client_t *c;
@@ -441,28 +442,28 @@ void resize_mouse(const arg_t *arg)
 	do {
 		XMaskEvent(dpy, MOUSE_MASK|ExposureMask|SubstructureRedirectMask, &ev);
 		switch(ev.type) {
-		case ConfigureRequest:
-		case Expose:
-		case MapRequest:
-			handler[ev.type](&ev);
-			break;
-		case MotionNotify:
-			if ((ev.xmotion.time - lasttime) <= (1000 / 60))
-				continue;
-			lasttime = ev.xmotion.time;
+			case ConfigureRequest:
+			case Expose:
+			case MapRequest:
+				handler[ev.type](&ev);
+				break;
+			case MotionNotify:
+				if ((ev.xmotion.time - lasttime) <= (1000 / 60))
+					continue;
+				lasttime = ev.xmotion.time;
 
-			nw = MAX(ev.xmotion.x - ocx - 2 * c->bw + 1, 1);
-			nh = MAX(ev.xmotion.y - ocy - 2 * c->bw + 1, 1);
-			if (c->mon->wx + nw >= selmon->wx && c->mon->wx + nw <= selmon->wx + selmon->ww
-			&& c->mon->wy + nh >= selmon->wy && c->mon->wy + nh <= selmon->wy + selmon->wh)
-			{
-				if (!c->isfloating && selmon->lt[selmon->sellt]->arrange
-				&& (abs(nw - c->w) > snap || abs(nh - c->h) > snap))
-					toggle_floating(NULL);
-			}
-			if (!selmon->lt[selmon->sellt]->arrange || c->isfloating)
-				resize(c, c->x, c->y, nw, nh, 1);
-			break;
+				nw = MAX(ev.xmotion.x - ocx - 2 * c->bw + 1, 1);
+				nh = MAX(ev.xmotion.y - ocy - 2 * c->bw + 1, 1);
+				if (c->mon->wx + nw >= selmon->wx && c->mon->wx + nw <= selmon->wx + selmon->ww
+				&& c->mon->wy + nh >= selmon->wy && c->mon->wy + nh <= selmon->wy + selmon->wh)
+				{
+					if (!c->isfloating && selmon->lt[selmon->sellt]->arrange
+					&& (abs(nw - c->w) > snap || abs(nh - c->h) > snap))
+						toggle_floating(NULL);
+				}
+				if (!selmon->lt[selmon->sellt]->arrange || c->isfloating)
+					resize(c, c->x, c->y, nw, nh, 1);
+				break;
 		}
 	} while (ev.type != ButtonRelease);
 	XWarpPointer(dpy, None, c->win, 0, 0, 0, 0, c->w + c->bw - 1, c->h + c->bw - 1);
@@ -497,41 +498,6 @@ void restack(monitor_t *m)
 	}
 	XSync(dpy, False);
 	while (XCheckMaskEvent(dpy, EnterWindowMask, &ev));
-}
-
-int send_event(Window w, Atom proto, int mask, long d0, long d1, long d2, long d3, long d4)
-{
-	int n;
-	Atom *protocols, mt;
-	int exists = 0;
-	XEvent ev;
-
-	if (proto == wm_atom[WMTakeFocus] || proto == wm_atom[WMDelete]) {
-		mt = wm_atom[WMProtocols];
-		if (XGetWMProtocols(dpy, w, &protocols, &n)) {
-			while (!exists && n--)
-				exists = protocols[n] == proto;
-			XFree(protocols);
-		}
-	}
-	else {
-		exists = True;
-		mt = proto;
-    	}
-
-	if (exists) {
-		ev.type = ClientMessage;
-		ev.xclient.window = w;
-		ev.xclient.message_type = mt;
-		ev.xclient.format = 32;
-		ev.xclient.data.l[0] = d0;
-		ev.xclient.data.l[1] = d1;
-		ev.xclient.data.l[2] = d2;
-		ev.xclient.data.l[3] = d3;
-		ev.xclient.data.l[4] = d4;
-		XSendEvent(dpy, w, False, mask, &ev);
-	}
-	return exists;
 }
 
 void set_client_state(client_t *c, long state)

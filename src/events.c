@@ -205,7 +205,7 @@ void destroy_notify(XEvent *event)
 
 	if ((c = win_to_client(ev->window)))
 		unmanage(c, 1);
-	else if ((c = win_to_sys_tray_icon(ev->window))) {
+	else if (show_sys_tray && (c = win_to_sys_tray_icon(ev->window))) {
 		remove_sys_tray_icon(c);
 		resize_bar_win(selmon);
 		update_sys_tray();
