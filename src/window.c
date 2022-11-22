@@ -377,8 +377,6 @@ void window_move_mouse(const arg_t *arg)
 	do {
 		XMaskEvent(dpy, MOUSE_MASK|ExposureMask|SubstructureRedirectMask, &ev);
 		switch(ev.type) {
-			case ConfigureRequest:
-			case Expose:
 			case MapRequest:
 				handler[ev.type](&ev);
 				break;

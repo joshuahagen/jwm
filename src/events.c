@@ -300,14 +300,15 @@ void map_request(XEvent *event)
 {
 	static XWindowAttributes wa;
 	XMapRequestEvent *ev = &event->xmaprequest;
-    client_t *i;
+    	client_t *i;
 
-    if ((i = win_to_sys_tray_icon(ev->window))) {
-        send_event(i->win, net_atom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_WINDOW_ACTIVATE, 0, 
+    	if ((i = win_to_sys_tray_icon(ev->window))) {
+        	send_event(i->win, net_atom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_WINDOW_ACTIVATE, 0, 
 		sys_tray->win, XEMBED_EMBEDDED_VERSION);
-        resize_bar_win(selmon);
-        update_sys_tray();
-    }
+        
+		resize_bar_win(selmon);
+        	update_sys_tray();
+        }
 
 	if (!XGetWindowAttributes(dpy, ev->window, &wa) || wa.override_redirect)
 		return;
@@ -352,7 +353,7 @@ void property_notify(XEvent *event)
 		update_sys_tray();
 	}
 
-    if ((ev->window == root) && (ev->atom == XA_WM_NAME))
+	if ((ev->window == root) && (ev->atom == XA_WM_NAME))
 		update_status();
 	else if (ev->state == PropertyDelete)
 		return; /* ignore */

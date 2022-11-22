@@ -141,8 +141,8 @@ int draw_status_bar(monitor_t *m, int bh, char* stext)
 		w += TEXTW(text) - lrpad;
 	else
 		isCode = 0;
-	text = p;
 
+	text = p;
 	w += 2; /* 1px padding on both sides */
 	ret = m->ww - w;
 	x = m->ww - w - get_sys_tray_width();
@@ -360,6 +360,7 @@ void update_bars(void)
 {
 	unsigned int w;
 	monitor_t *m;
+	
 	XSetWindowAttributes wa = {
 		.override_redirect = True,
 		.background_pixmap = ParentRelative,

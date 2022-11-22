@@ -150,7 +150,7 @@ void cleanup(void)
 		free(sys_tray);
 	}
 
-    for (i = 0; i < CurLast; i++)
+        for (i = 0; i < CurLast; i++)
 		drw_cur_free(drw, cursor[i]);
 
 	for (i = 0; i < scm_len + 1; i++)
@@ -319,7 +319,7 @@ int send_event(Window w, Atom proto, int mask, long d0, long d1, long d2, long d
 	} else {
 		exists = True;
 		mt = proto;
-    }
+    	}
 
 	if (exists) {
 		ev.type = ClientMessage;
