@@ -14,6 +14,7 @@ void grab_buttons(client_t *c, int focused)
 		if (!focused)
 			XGrabButton(dpy, AnyButton, AnyModifier, c->win, False,
 				BUTTON_MASK, GrabModeSync, GrabModeSync, None, None);
+				
 		for (i = 0; i < LENGTH(buttons); i++)
 			if (buttons[i].click == ClkClientWin)
 				for (j = 0; j < LENGTH(modifiers); j++)

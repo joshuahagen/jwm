@@ -15,6 +15,7 @@ int main(void)
 	d = XOpenDisplay(NULL);
 	if (!d)
 		exit(1);
+		
 	r = DefaultRootWindow(d);
 
 	f = XCreateSimpleWindow(d, r, 100, 100, 400, 400, 0, 0, 0);

@@ -21,6 +21,7 @@ void cleanup_mon(monitor_t *mon)
 		for (m = mons; m && m->next != mon; m = m->next);
 		m->next = mon->next;
 	}
+
 	XUnmapWindow(dpy, mon->barwin);
 	XDestroyWindow(dpy, mon->barwin);
 	free(mon);
@@ -39,6 +40,7 @@ monitor_t *create_mon(void)
 	m->lt[0] = &layouts[0];
 	m->lt[1] = &layouts[1 % LENGTH(layouts)];
 	strncpy(m->ltsymbol, layouts[0].symbol, sizeof m->ltsymbol);
+
 	return m;
 }
 
@@ -53,6 +55,7 @@ monitor_t *dir_to_mon(int dir)
 		for (m = mons; m->next; m = m->next);
 	else
 		for (m = mons; m->next != selmon; m = m->next);
+
 	return m;
 }
 
@@ -64,6 +67,7 @@ void focus_mon(const arg_t *arg)
 		return;
 	if ((m = dir_to_mon(arg->i)) == selmon)
 		return;
+
 	unfocus(selmon->sel, 0);
 	selmon = m;
 	focus(NULL);
@@ -79,6 +83,7 @@ monitor_t *rect_to_mon(int x, int y, int w, int h)
 			area = a;
 			r = m;
 		}
+
 	return r;
 }
 
@@ -86,6 +91,7 @@ void send_mon(client_t *c, monitor_t *m)
 {
 	if (c->mon == m)
 		return;
+
 	unfocus(c, 1);
 	detach(c);
 	detach_stack(c);
@@ -104,12 +110,16 @@ monitor_t *sys_tray_to_mon(monitor_t *m)
 	if(!sys_tray_pinning) {
 		if(!m)
 			return selmon;
+
 		return m == selmon ? m : NULL;
 	}
+
 	for(n = 1, t = mons; t && t->next; n++, t = t->next) ;
 	for(i = 1, t = mons; t && t->next && i < sys_tray_pinning; i++, t = t->next) ;
+	
 	if(sys_tray_pinning_fail_first && n < sys_tray_pinning)
 		return mons;
+	
 	return t;
 }
 
@@ -117,6 +127,7 @@ void tag_mon(const arg_t *arg)
 {
 	if (!selmon->sel || !mons->next)
 		return;
+
 	send_mon(selmon->sel, dir_to_mon(arg->i));
 }
 
@@ -128,10 +139,13 @@ monitor_t *win_to_mon(Window w)
 
 	if (w == root && get_root_ptr(&x, &y))
 		return rect_to_mon(x, y, 1, 1);
+
 	for (m = mons; m; m = m->next)
 		if (w == m->barwin)
 			return m;
+	
 	if ((c = win_to_client(w)))
 		return c->mon;
+	
 	return selmon;
 }

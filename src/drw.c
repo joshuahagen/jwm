@@ -23,6 +23,7 @@ static long utf8decodebyte(const char c, size_t *i)
 	for (*i = 0; *i < (UTF_SIZ + 1); ++(*i))
 		if (((unsigned char)c & utfmask[*i]) == utfbyte[*i])
 			return (unsigned char)c & ~utfmask[*i];
+
 	return 0;
 }
 
@@ -30,8 +31,9 @@ static size_t utf8validate(long *u, size_t i)
 {
 	if (!BETWEEN(*u, utfmin[i], utfmax[i]) || BETWEEN(*u, 0xD800, 0xDFFF))
 		*u = UTF_INVALID;
-	for (i = 1; *u > utfmax[i]; ++i)
-		;
+
+	for (i = 1; *u > utfmax[i]; ++i);
+
 	return i;
 }
 
@@ -43,16 +45,20 @@ static size_t utf8decode(const char *c, long *u, size_t clen)
 	*u = UTF_INVALID;
 	if (!clen)
 		return 0;
+
 	udecoded = utf8decodebyte(c[0], &len);
 	if (!BETWEEN(len, 1, UTF_SIZ))
 		return 1;
+	
 	for (i = 1, j = 1; i < clen && j < len; ++i, ++j) {
 		udecoded = (udecoded << 6) | utf8decodebyte(c[i], &type);
 		if (type)
 			return j;
 	}
+	
 	if (j < len)
 		return 0;
+
 	*u = udecoded;
 	utf8validate(u, len);
 
@@ -85,8 +91,10 @@ void drw_resize(drw_t *drw, unsigned int w, unsigned int h)
 	drw->h = h;
 	if (drw->picture)
 		XRenderFreePicture(drw->dpy, drw->picture);
+
 	if (drw->drawable)
 		XFreePixmap(drw->dpy, drw->drawable);
+
 	drw->drawable = XCreatePixmap(drw->dpy, drw->root, w, h, DefaultDepth(drw->dpy, drw->screen));
 	drw->picture = XRenderCreatePicture(drw->dpy, drw->drawable, XRenderFindVisualFormat(drw->dpy, DefaultVisual(drw->dpy, drw->screen)), 0, NULL);
 }
@@ -119,6 +127,7 @@ static fnt_t *xfont_create(drw_t *drw, const char *fontname, FcPattern *fontpatt
 			fprintf(stderr, "error, cannot load font from name: '%s'\n", fontname);
 			return NULL;
 		}
+
 		if (!(pattern = FcNameParse((FcChar8 *) fontname))) {
 			fprintf(stderr, "error, cannot parse font name to pattern: '%s'\n", fontname);
 			XftFontClose(drw->dpy, xfont);
@@ -146,8 +155,10 @@ static void xfont_free(fnt_t *font)
 {
 	if (!font)
 		return;
+	
 	if (font->pattern)
 		FcPatternDestroy(font->pattern);
+
 	XftFontClose(font->dpy, font->xfont);
 	free(font);
 }
@@ -166,6 +177,7 @@ fnt_t *drw_fontset_create(drw_t *drw, const char *fonts[], size_t fontcount)
 			ret = cur;
 		}
 	}
+
 	return (drw->fonts = ret);
 }
 
@@ -201,6 +213,7 @@ clr_t *drw_scm_create(drw_t *drw, const char *clrnames[], size_t clrcount)
 
 	for (i = 0; i < clrcount; i++)
 		drw_clr_create(drw, &ret[i], clrnames[i]);
+
 	return ret;
 }
 
@@ -216,7 +229,8 @@ void drw_setscheme(drw_t *drw, clr_t *scm)
 		drw->scheme = scm;
 }
 
-Picture drw_picture_create_resized(drw_t *drw, char *src, unsigned int srcw, unsigned int srch, unsigned int dstw, unsigned int dsth) {
+Picture drw_picture_create_resized(drw_t *drw, char *src, unsigned int srcw, unsigned int srch, unsigned int dstw, unsigned int dsth) 
+{
 	Pixmap pm;
 	Picture pic;
 	GC gc;
@@ -261,6 +275,7 @@ Picture drw_picture_create_resized(drw_t *drw, char *src, unsigned int srcw, uns
 		    32, 0, 32,
 		    0, 0, 0
 		};
+
 		XInitImage(&img);
 
 		pm = XCreatePixmap(drw->dpy, drw->root, dstw, dsth, 32);
@@ -280,6 +295,7 @@ void drw_rect(drw_t *drw, int x, int y, unsigned int w, unsigned int h, int fill
 {
 	if (!drw || !drw->scheme)
 		return;
+
 	XSetForeground(drw->dpy, drw->gc, invert ? drw->scheme[ColBg].pixel : drw->scheme[ColFg].pixel);
 	if (filled)
 		XFillRectangle(drw->dpy, drw->drawable, drw->gc, x, y, w, h);
@@ -324,6 +340,7 @@ int drw_text(drw_t *drw, int x, int y, unsigned int w, unsigned int h, unsigned 
 	usedfont = drw->fonts;
 	if (!ellipsis_width && render)
 		ellipsis_width = drw_fontset_getwidth(drw, "...");
+
 	while (1) {
 		ew = ellipsis_len = utf8strlen = 0;
 		utf8str = text;
@@ -357,6 +374,7 @@ int drw_text(drw_t *drw, int x, int y, unsigned int w, unsigned int h, unsigned 
 					} else {
 						nextfont = curfont;
 					}
+
 					break;
 				}
 			}
@@ -373,9 +391,11 @@ int drw_text(drw_t *drw, int x, int y, unsigned int w, unsigned int h, unsigned 
 				XftDrawStringUtf8(d, &drw->scheme[invert ? ColBg : ColFg],
 				                  usedfont->xfont, x, ty, (XftChar8 *)utf8str, utf8strlen);
 			}
+
 			x += ew;
 			w -= ew;
 		}
+
 		if (render && overflow)
 			drw_text(drw, ellipsis_x, y, ellipsis_w, h, 0, "...", invert);
 
@@ -417,8 +437,7 @@ int drw_text(drw_t *drw, int x, int y, unsigned int w, unsigned int h, unsigned 
 			if (match) {
 				usedfont = xfont_create(drw, NULL, match);
 				if (usedfont && XftCharExists(drw->dpy, usedfont->xfont, utf8codepoint)) {
-					for (curfont = drw->fonts; curfont->next; curfont = curfont->next)
-						; /* NOP */
+					for (curfont = drw->fonts; curfont->next; curfont = curfont->next); /* NOP */
 					curfont->next = usedfont;
 				} else {
 					xfont_free(usedfont);
@@ -429,6 +448,7 @@ no_match:
 			}
 		}
 	}
+
 	if (d)
 		XftDrawDestroy(d);
 
@@ -439,6 +459,7 @@ void drw_pic(drw_t *drw, int x, int y, unsigned int w, unsigned int h, Picture p
 {
 	if (!drw)
 		return;
+
 	XRenderComposite(drw->dpy, PictOpOver, pic, None, drw->picture, 0, 0, 0, 0, x, y, w, h);
 }
 
@@ -455,6 +476,7 @@ unsigned int drw_fontset_getwidth(drw_t *drw, const char *text)
 {
 	if (!drw || !drw->fonts || !text)
 		return 0;
+
 	return drw_text(drw, 0, 0, 0, 0, 0, text, 0);
 }
 
@@ -463,6 +485,7 @@ unsigned int drw_fontset_getwidth_clamp(drw_t *drw, const char *text, unsigned i
 	unsigned int tmp = 0;
 	if (drw && drw->fonts && text && n)
 		tmp = drw_text(drw, 0, 0, 0, 0, 0, text, n);
+		
 	return MIN(n, tmp);
 }
 

@@ -34,5 +34,6 @@ void update_num_lock_mask(void)
 			if (modmap->modifiermap[i * modmap->max_keypermod + j]
 				== XKeysymToKeycode(dpy, XK_Num_Lock))
 				num_lock_mask = (1 << i);
+
 	XFreeModifiermap(modmap);
 }

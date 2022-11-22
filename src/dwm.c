@@ -139,6 +139,7 @@ void cleanup(void)
 	for (m = mons; m; m = m->next)
 		while (m->stack)
 			unmanage(m->stack, 0);
+
 	XUngrabKey(dpy, AnyKey, AnyModifier, root);
 	while (mons)
 		cleanup_mon(mons);
@@ -149,10 +150,12 @@ void cleanup(void)
 		free(sys_tray);
 	}
 
-        for (i = 0; i < CurLast; i++)
+    for (i = 0; i < CurLast; i++)
 		drw_cur_free(drw, cursor[i]);
+
 	for (i = 0; i < scm_len + 1; i++)
 		free(scheme[i]);
+
 	free(scheme);
 	XDestroyWindow(dpy, wm_check_win);
 	drw_free(drw);
@@ -167,6 +170,7 @@ void focus_stack(const arg_t *arg)
 
 	if (!selmon->sel || (selmon->sel->isfullscreen && lock_full_screen))
 		return;
+
 	if (arg->i > 0) {
 		for (c = selmon->sel->next; c && !IS_VISIBLE(c); c = c->next);
 		if (!c)
@@ -180,6 +184,7 @@ void focus_stack(const arg_t *arg)
 				if (IS_VISIBLE(i))
 					c = i;
 	}
+
 	if (c) {
 		focus(c);
 		restack(selmon);
@@ -211,15 +216,18 @@ int get_text_prop(Window w, Atom atom, char *text, unsigned int size)
 
 	if (!text || size == 0)
 		return 0;
+
 	text[0] = '\0';
 	if (!XGetTextProperty(dpy, w, &name, atom) || !name.nitems)
 		return 0;
+
 	if (name.encoding == XA_STRING) {
 		strncpy(text, (char *)name.value, size - 1);
 	} else if (XmbTextPropertyToTextList(dpy, &name, &list, &n) >= Success && n > 0 && *list) {
 		strncpy(text, *list, size - 1);
 		XFreeStringList(list);
 	}
+
 	text[size - 1] = '\0';
 	XFree(name.value);
 	return 1;
@@ -279,6 +287,7 @@ void scan(void)
 			if (wa.map_state == IsViewable || get_state(wins[i]) == IconicState)
 				manage(wins[i], &wa);
 		}
+
 		for (i = 0; i < num; i++) { /* now the transients */
 			if (!XGetWindowAttributes(dpy, wins[i], &wa))
 				continue;
@@ -286,6 +295,7 @@ void scan(void)
 			&& (wa.map_state == IsViewable || get_state(wins[i]) == IconicState))
 				manage(wins[i], &wa);
 		}
+
 		if (wins)
 			XFree(wins);
 	}
@@ -303,13 +313,13 @@ int send_event(Window w, Atom proto, int mask, long d0, long d1, long d2, long d
 		if (XGetWMProtocols(dpy, w, &protocols, &n)) {
 			while (!exists && n--)
 				exists = protocols[n] == proto;
+			
 			XFree(protocols);
 		}
-	}
-	else {
+	} else {
 		exists = True;
 		mt = proto;
-    	}
+    }
 
 	if (exists) {
 		ev.type = ClientMessage;
@@ -323,6 +333,7 @@ int send_event(Window w, Atom proto, int mask, long d0, long d1, long d2, long d
 		ev.xclient.data.l[4] = d4;
 		XSendEvent(dpy, w, False, mask, &ev);
 	}
+
 	return exists;
 }
 
@@ -333,9 +344,11 @@ void set_m_fact(const arg_t *arg)
 
 	if (!arg || !selmon->lt[selmon->sellt]->arrange)
 		return;
+
 	f = arg->f < 1.0 ? arg->f + selmon->mfact : arg->f - 1.0;
 	if (f < 0.05 || f > 0.95)
 		return;
+
 	selmon->mfact = f;
 	arrange(selmon);
 }
@@ -357,6 +370,7 @@ void setup(void)
 	sh = DisplayHeight(dpy, screen);
 	root = RootWindow(dpy, screen);
 	drw = drw_create(dpy, screen, root, sw, sh);
+
 	if (!drw_fontset_create(drw, fonts, LENGTH(fonts)))
 		die("no fonts could be loaded.");
 	
@@ -406,6 +420,7 @@ void setup(void)
 				break;
 			}
 		}
+
 		if (exit)
 			break;
 	}
@@ -453,6 +468,7 @@ void sig_chld(int unused)
 {
 	if (signal(SIGCHLD, sig_chld) == SIG_ERR)
 		die("can't install sig_chld handler:");
+
 	while (0 < waitpid(-1, NULL, WNOHANG));
 }
 
@@ -460,6 +476,7 @@ void spawn(const arg_t *arg)
 {
 	if (arg->v == dmenucmd)
 		dmenumon[0] = '0' + selmon->num;
+
 	if (fork() == 0) {
 		if (dpy)
 			close(ConnectionNumber(dpy));
@@ -484,6 +501,7 @@ void toggle_tag(const arg_t *arg)
 
 	if (!selmon->sel)
 		return;
+
 	newtags = selmon->sel->tags ^ (arg->ui & TAG_MASK);
 	if (newtags) {
 		selmon->sel->tags = newtags;
@@ -521,6 +539,7 @@ int update_geom(void)
 		for (i = 0, j = 0; i < nn; i++)
 			if (is_unique_geom(unique, j, &info[i]))
 				memcpy(&unique[j++], &info[i], sizeof(XineramaScreenInfo));
+
 		XFree(info);
 		nn = j;
 
@@ -532,10 +551,11 @@ int update_geom(void)
 			else
 				mons = create_mon();
 		}
+
 		for (i = 0, m = mons; i < nn && m; m = m->next, i++)
 			if (i >= n
 			|| unique[i].x_org != m->mx || unique[i].y_org != m->my
-			|| unique[i].width != m->mw || unique[i].height != m->mh)
+			|| unique[i].width != m->mw || unique[i].height != m->mh) 
 			{
 				dirty = 1;
 				m->num = i;
@@ -545,9 +565,11 @@ int update_geom(void)
 				m->mh = m->wh = unique[i].height;
 				update_bar_pos(m);
 			}
+
 		/* removed monitors if n > nn */
 		for (i = nn; i < n; i++) {
 			for (m = mons; m && m->next; m = m->next);
+
 			while ((c = m->clients)) {
 				dirty = 1;
 				m->clients = c->next;
@@ -556,16 +578,20 @@ int update_geom(void)
 				attach(c);
 				attach_stack(c);
 			}
+
 			if (m == selmon)
 				selmon = mons;
+			
 			cleanup_mon(m);
 		}
+
 		free(unique);
 	} else
 #endif /* XINERAMA */
 	{ /* default monitor setup */
 		if (!mons)
 			mons = create_mon();
+
 		if (mons->mw != sw || mons->mh != sh) {
 			dirty = 1;
 			mons->mw = mons->ww = sw;
@@ -573,10 +599,12 @@ int update_geom(void)
 			update_bar_pos(mons);
 		}
 	}
+
 	if (dirty) {
 		selmon = mons;
 		selmon = win_to_mon(root);
 	}
+
 	return dirty;
 }
 
@@ -590,10 +618,12 @@ void update_wm_hints(client_t *c)
 			XSetWMHints(dpy, c->win, wmh);
 		} else
 			c->isurgent = (wmh->flags & XUrgencyHint) ? 1 : 0;
+
 		if (wmh->flags & InputHint)
 			c->neverfocus = !wmh->input;
 		else
 			c->neverfocus = 0;
+		
 		XFree(wmh);
 	}
 }
@@ -602,9 +632,11 @@ void view(const arg_t *arg)
 {
 	if ((arg->ui & TAG_MASK) == selmon->tagset[selmon->seltags])
 		return;
+
 	selmon->seltags ^= 1; /* toggle sel tagset */
 	if (arg->ui & TAG_MASK)
 		selmon->tagset[selmon->seltags] = arg->ui & TAG_MASK;
+	
 	focus(NULL);
 	arrange(selmon);
 }
@@ -624,8 +656,10 @@ int xerror(Display *dpy, XErrorEvent *ee)
 	|| (ee->request_code == X_GrabKey && ee->error_code == BadAccess)
 	|| (ee->request_code == X_CopyArea && ee->error_code == BadDrawable))
 		return 0;
+	
 	fprintf(stderr, "dwm: fatal error: request code=%d, error code=%d\n",
 		ee->request_code, ee->error_code);
+	
 	return xerrorxlib(dpy, ee); /* may call exit */
 }
 
@@ -648,8 +682,10 @@ void zoom(const arg_t *arg)
 
 	if (!selmon->lt[selmon->sellt]->arrange || !c || c->isfloating)
 		return;
+
 	if (c == next_tiled(selmon->clients) && !(c = next_tiled(c->next)))
 		return;
+	
 	pop(c);
 }
 
@@ -659,10 +695,13 @@ int main(int argc, char *argv[])
 		die("dwm-"VERSION);
 	else if (argc != 1)
 		die("usage: dwm [-v]");
+
 	if (!setlocale(LC_CTYPE, "") || !XSupportsLocale())
 		fputs("warning: no locale support\n", stderr);
+	
 	if (!(dpy = XOpenDisplay(NULL)))
 		die("dwm: cannot open display");
+	
 	check_other_wm();
 	setup();
 #ifdef __OpenBSD__
