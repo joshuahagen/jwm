@@ -81,6 +81,13 @@ void fibonacci(monitor_t *mon, int s)
 void fullscreen(const arg_t *arg)
 {
 	static layout_t *last_layout;
+	unsigned int n;
+	client_t *nbc;
+
+	/* grab number of clients on the selected monitor */
+	for (n = 0, nbc = next_tiled(selmon->clients); nbc; nbc = next_tiled(nbc->next), n++);
+	if (n == 0)
+		return;
 
 	if (selmon->showbar) {
 		for(last_layout = (layout_t *)layouts; last_layout != selmon->lt[selmon->sellt]; last_layout++);
