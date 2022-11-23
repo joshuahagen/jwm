@@ -1,8 +1,17 @@
 #include "dwm.h"
-#include "button.h"
 #include "helpers.h"
 #include "keyboard.h"
+#include "mouse.h"
 #include "settings.h"
+
+int get_root_ptr(int *x, int *y)
+{
+	int di;
+	unsigned int dui;
+	Window dummy;
+
+	return XQueryPointer(dpy, root, &dummy, &dummy, x, y, &di, &di, &dui);
+}
 
 void grab_buttons(client_t *c, int focused)
 {

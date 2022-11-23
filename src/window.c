@@ -1,10 +1,10 @@
 #include <X11/Xatom.h>
 #include "dwm.h"
 #include "bar.h"
-#include "button.h"
 #include "helpers.h"
 #include "layout.h"
 #include "monitor.h"
+#include "mouse.h"
 #include "settings.h"
 #include "window.h"
 

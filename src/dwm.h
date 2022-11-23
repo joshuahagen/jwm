@@ -24,7 +24,6 @@ extern int scm_len;
 extern Atom wm_atom[WMLast], net_atom[NetLast], xatom[XLast];
 extern void (*handler[LASTEvent]) (XEvent *);
 
-int get_root_ptr(int *x, int *y);
 int get_text_prop(Window w, Atom atom, char *text, unsigned int size);
 uint32_t pre_alpha(uint32_t p);
 int send_event(Window w, Atom proto, int m, long d0, long d1, long d2, long d3, long d4);

@@ -45,11 +45,11 @@
 
 #include "types.h"
 #include "bar.h"
-#include "button.h"
 #include "events.h"
 #include "helpers.h"
 #include "keyboard.h"
 #include "monitor.h"
+#include "mouse.h"
 #include "settings.h"
 #include "window.h"
 #include "dwm.h"
@@ -197,15 +197,6 @@ uint32_t pre_alpha(uint32_t p)
 	uint32_t rb = (a * (p & 0xFF00FFu)) >> 8u;
 	uint32_t g = (a * (p & 0x00FF00u)) >> 8u;
 	return (rb & 0xFF00FFu) | (g & 0x00FF00u) | (a << 24u);
-}
-
-int get_root_ptr(int *x, int *y)
-{
-	int di;
-	unsigned int dui;
-	Window dummy;
-
-	return XQueryPointer(dpy, root, &dummy, &dummy, x, y, &di, &di, &dui);
 }
 
 int get_text_prop(Window w, Atom atom, char *text, unsigned int size)

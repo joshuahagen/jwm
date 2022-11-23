@@ -1,6 +1,7 @@
 #include "dwm.h"
 #include "helpers.h"
 #include "monitor.h"
+#include "mouse.h"
 #include "settings.h"
 #include "window.h"
 

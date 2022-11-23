@@ -3,7 +3,7 @@
 
 include config.mk
 
-SRC = bar.c button.c drw.c dwm.c events.c keyboard.c layout.c monitor.c util.c window.c
+SRC = bar.c drw.c dwm.c events.c keyboard.c layout.c monitor.c mouse.c util.c window.c
 OBJ = ${SRC:.c=.o}
 
 all: options dwm
