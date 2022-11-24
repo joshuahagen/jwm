@@ -21,13 +21,14 @@ const int show_sys_tray        	         = 1;        /* 0 means no systray */
 const char *fonts[]               	 = { "Hack:size=12" };
 const char dmenufont[]            	 = "Hack:size=12";
 /* color definitions 			   hex code */
-static const char col_gray1[]            = "#222222";
-static const char col_gray2[]            = "#444444";
+static const char col_gray1[]            = "#363636";
+static const char col_gray2[]            = "#292929";
 static const char col_gray3[]            = "#bbbbbb";
 static const char col_gray5[]		 = "#2F2F2F";
-static const char col_cyan[]      	 = "#222222";
 static const char col_blue[]		 = "#3099A1";
+static const char col_blue2[]            = "#192841";
 static const char col_purple[]     	 = "#af7fcd";
+static const char col_purple2[]          = "#221C35";
 static const char col_yellow_white[]     = "#E7D7AD";
 /* end color definitions */
 const unsigned int icon_size      = 16;	    /* icon size */
@@ -35,23 +36,26 @@ const unsigned int icon_spacing   = 5;	    /* space between icon and the window 
 
 /* color schemes, modify this to change most colors */
 const char* colors[][3] = {
-	/*               fg         bg         border   */
-	[SchemeNorm] = { col_yellow_white, col_gray1, col_gray2 },
-	[SchemeSel]  = { col_purple, col_cyan,  col_purple },
-	[SchemeSelAlt] = { col_yellow_white, col_gray5, col_cyan }
+	/*                 fg         	      bg           border   */
+	[SchemeNorm] =   { col_yellow_white,  col_gray1,   col_gray2  },
+	[SchemeSel]  =   { col_purple, 	      col_gray1,   col_purple },
+	[SchemeSelAlt] = { col_yellow_white,  col_gray1,   col_gray1  }
 };
 
 /* tagging */
-const char *tags[] = { "www", "dev", "sys", "vms", "stox" };
+const char *tags[] = { "www", "dev", "chat", "sys", "vms", "stox" };
 
 const rule_t rules[] = {
 	/* xprop(1):
 	 *	WM_CLASS(STRING) = instance, class
 	 *	WM_NAME(STRING) = title
 	 */
-	/* class          instance    title       tags mask     isfloating   monitor */
-	{ "Gimp",         NULL,       NULL,       0,            1,           -1 },
-	{ "firefox-bin",  NULL,       NULL,       1 << 8,       0,           -1 },
+	/* class          	instance    title       tags mask     isfloating   monitor */
+	{ "Code",         	NULL,	    NULL,	1 << 1,       0,           -1 },
+	{ "firefox",  	  	NULL,       NULL,       1,	      0,           -1 },
+	{ "java-lang-Thread",   NULL,	    NULL,	1 << 5,       0,           -1 },
+	{ "Signal",       	NULL,       NULL,       1 << 2,	      0,	   -1 },
+	{ "Virt-manager", 	NULL,	    NULL,       1 << 4,	      0,	   -1 },
 };
 
 /* layout(s) */
@@ -61,13 +65,13 @@ const int resize_hints        = 0;      /* 1 means respect size hints in tiled r
 const int lock_full_screen    = 1;      /* 1 will force focus on the fullscreen window */
 
 const layout_t layouts[] = {
-	/* symbol     arrange function */
-	{ "[]=",      tile },    /* first entry is default */
-	{ "><>",      NULL },    /* no layout function means floating behavior */
-	{ "[M]",      monocle }, /* monocle is a full size window that overlapps */
-	{ "HHH",      grid },    /* grid like layout, will make every window the same size */
-	{ "[@]",      spiral },  /* spiral windows inward */
-	{ "[\\]",     dwindle }, /* dwindle windows similar to bspwm's default tiling mechanism */
+	/* symbol       arrange function */
+	{ "[]=",      tile    },    /* first entry is default */
+	{ "><>",      NULL    },    /* no layout function means floating behavior */
+	{ "[M]",      monocle },    /* monocle is a full size window that overlapps */
+	{ "HHH",      grid    },    /* grid like layout, will make every window the same size */
+	{ "[@]",      spiral  },    /* spiral windows inward */
+	{ "[\\]",     dwindle },    /* dwindle windows similar to bspwm's default tiling mechanism */
 };
 
 /* key definitions */
@@ -83,12 +87,12 @@ const layout_t layouts[] = {
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_purple, NULL };
+static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_blue2, "-sf", col_purple, NULL };
 static const char *termcmd[]  = { "st", NULL };
 
 /* keyboard hotkeys */
 const _key_t keys[] = {
-	/* modifier                     key			   function        argument */
+	/* modifier                     key			   function        	argument */
 	{ MODKEY,                       XK_p,			   spawn,          	{.v = dmenucmd } },
 	{ MODKEY|ShiftMask,             XK_Return,		   spawn,          	{.v = termcmd } },
 	{ MODKEY,                       XK_b,			   toggle_bar,      	{0} },
