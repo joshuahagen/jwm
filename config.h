@@ -124,6 +124,7 @@ const _key_t keys[] = {
         { MODKEY|ShiftMask,             XK_F5,                     spawn,          	SHCMD("~/.local/bin/dmenu_set_wallpaper") },
 	{ MODKEY|ShiftMask,		XK_F6,			   spawn,               SHCMD("~/.local/bin/dmenu_dotfiles") },
 	{ MODKEY|ShiftMask,		XK_F7,			   spawn,		SHCMD("~/.local/bin/dmenu_pass") },
+	{ MODKEY|ShiftMask,		XK_F8,			   spawn,		SHCMD("~/.local/bin/copy_github_oath") },
 	{ MODKEY|ShiftMask,             XK_w,                      spawn,		SHCMD("firefox-bin") },
 	{ MODKEY|ShiftMask,		XK_h,			   spawn,		{.v = (const char*[]){ "st", "-e", "htop", NULL } } },
 	{ MODKEY|ShiftMask,   		XK_l,			   spawn,		SHCMD("libreoffice") },
