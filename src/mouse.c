@@ -18,7 +18,7 @@ void grab_buttons(client_t *c, int focused)
 	update_num_lock_mask();
 	{
 		unsigned int i, j;
-		unsigned int modifiers[] = { 0, LockMask, 0, 0|LockMask };
+		unsigned int modifiers[] = { 0, LockMask, num_lock_mask, num_lock_mask|LockMask };
 		XUngrabButton(dpy, AnyButton, AnyModifier, c->win);
 		if (!focused)
 			XGrabButton(dpy, AnyButton, AnyModifier, c->win, False,
