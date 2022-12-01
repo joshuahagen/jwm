@@ -11,8 +11,8 @@ typedef XftColor clr_t;
 enum { CurNormal, CurResize, CurMove, CurLast }; /* cursor */
 enum { SchemeNorm, SchemeSel, SchemeSelAlt }; /* color schemes */
 enum { NetSupported, NetWMName, NetWMIcon, NetWMState, NetWMCheck,
-       NetSystemTray, NetSystemTrayOP, NetSystemTrayOrientation, NetSystemTrayOrientationHorz,
-       NetWMFullscreen, NetActiveWindow, NetWMWindowType,
+       NetSystemTray, NetSystemTrayOP, NetSystemTrayOrientation, NetSystemTrayVisual, NetSystemTrayOrientationHorz,
+       NetWMFullscreen, NetActiveWindow, NetWMWindowType, NetWMWindowTypeDock,
        NetWMWindowTypeDialog, NetClientList, NetLast }; /* EWMH atoms */
 enum { Manager, Xembed, XembedInfo, XLast }; /* Xembed atoms */
 enum { WMProtocols, WMDelete, WMState, WMTakeFocus, WMLast }; /* default atoms */
@@ -70,6 +70,9 @@ typedef struct {
 	Display *dpy;
 	int screen;
 	Window root;
+	Visual *visual;
+	unsigned int depth;
+	Colormap cmap;
 	Drawable drawable;
 	Picture picture;
 	GC gc;
@@ -118,11 +121,5 @@ typedef struct {
 	int isfloating;
 	int monitor;
 } rule_t;
-
-typedef struct sys_tray sys_tray_t;
-struct sys_tray {
-	Window win;
-	client_t *icons;
-};
 
 #endif

@@ -1,7 +1,7 @@
 /* See LICENSE file for copyright and license details. */
 
 /* Drawable abstraction */
-drw_t *drw_create(Display *dpy, int screen, Window win, unsigned int w, unsigned int h);
+drw_t *drw_create(Display *dpy, int screen, Window win, unsigned int w, unsigned int h, Visual *visual, unsigned int depth, Colormap cmap);
 void drw_resize(drw_t *drw, unsigned int w, unsigned int h);
 void drw_free(drw_t *drw);
 
@@ -13,8 +13,8 @@ unsigned int drw_fontset_getwidth_clamp(drw_t *drw, const char *text, unsigned i
 void drw_font_getexts(fnt_t *font, const char *text, unsigned int len, unsigned int *w, unsigned int *h);
 
 /* Colorscheme abstraction */
-void drw_clr_create(drw_t *drw, clr_t *dest, const char *clrname);
-clr_t *drw_scm_create(drw_t *drw, const char *clrnames[], size_t clrcount);
+void drw_clr_create(drw_t *drw, clr_t *dest, const char *clrname, unsigned int alpha);
+clr_t *drw_scm_create(drw_t *drw, const char *clrnames[], const unsigned int alphas[], size_t clrcount);
 
 /* Cursor abstraction */
 cur_t *drw_cur_create(drw_t *drw, int shape);

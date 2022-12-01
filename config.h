@@ -7,17 +7,14 @@
 const unsigned int border_px             = 0;        /* border pixel of windows */
 const unsigned int gap_px             	 = 5;	     /* gap between windows in tiling mode */
 const unsigned int snap    	 	 = 32;       /* snap pixel */
+const unsigned int bar_alpha     	 = 200;      /* alpha of bar 255 = no transparency */
+const unsigned int border_alpha 	 = OPAQUE;
 const int showbar          	 	 = 1;        /* 0 means no bar */
 const int topbar           	 	 = 1;        /* 0 means bottom bar */
 const int topbar_padding	  	 = 12;       /* default spacing around the bars font */
 const int vert_pad			 = 6;		
 const int side_pad		         = 10;
 const int center_title		 	 = 0;        /* 0 means title is not centered */
-const unsigned int sys_tray_pinning 	 = 0;        /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
-const unsigned int sys_tray_on_left      = 0;        /* 0: systray in the right corner, >0: systray on left of status text */
-const unsigned int sys_tray_spacing 	 = 5;        /* systray spacing */
-const int sys_tray_pinning_fail_first    = 1;        /* 1: if pinning fails, display systray on the first monitor, False: display systray on the last monitor*/
-const int show_sys_tray        	         = 1;        /* 0 means no systray */
 const char *fonts[]               	 = { "Hack:size=12" };
 const char dmenufont[]            	 = "Hack:size=12";
 /* color definitions 			   hex code */
@@ -36,10 +33,17 @@ const unsigned int icon_spacing   = 5;	    /* space between icon and the window 
 
 /* color schemes, modify this to change most colors */
 const char* colors[][3] = {
-	/*                 fg         	      bg           border   */
-	[SchemeNorm] =   { col_yellow_white,  col_gray1,   col_gray2  },
-	[SchemeSel]  =   { col_purple, 	      col_gray1,   col_purple },
+	/*                 fg         	      bg           border    */
+	[SchemeNorm]   = { col_yellow_white,  col_gray1,   col_gray2  },
+	[SchemeSel]    = { col_purple, 	      col_gray1,   col_purple },
 	[SchemeSelAlt] = { col_yellow_white,  col_gray1,   col_gray1  }
+};
+
+const unsigned int alphas[][3] = {
+	/*                 fg      bg         border      */
+	[SchemeNorm]   = { OPAQUE, bar_alpha, border_alpha },
+	[SchemeSel]    = { OPAQUE, bar_alpha, border_alpha },
+	[SchemeSelAlt] = { OPAQUE, bar_alpha, border_alpha }
 };
 
 /* tagging */

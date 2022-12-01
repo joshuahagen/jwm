@@ -22,9 +22,6 @@ void draw_bar(monitor_t *m)
 	if (!m->showbar)
 		return;
 
-	if(show_sys_tray && m == sys_tray_to_mon(m) && !sys_tray_on_left)
-		stw = get_sys_tray_width();
-
 	/* draw status first so it can be overdrawn by tags later */
 	if (m == selmon && m->mw >= 2560) { /* status is only drawn on monitor wide enough to display full statusbar */
 		tw = m->ww - draw_status_bar(m, bh, stext);
@@ -145,7 +142,7 @@ int draw_status_bar(monitor_t *m, int bh, char* stext)
 	text = p;
 	w += 2; /* 1px padding on both sides */
 	ret = m->ww - w;
-	x = m->ww - w - get_sys_tray_width();
+	x = m->ww - w;
 
 	drw_setscheme(drw, scheme[scm_len]);
 	drw->scheme[ColFg] = scheme[SchemeNorm][ColFg];
@@ -171,13 +168,13 @@ int draw_status_bar(monitor_t *m, int bh, char* stext)
 					char buf[8];
 					memcpy(buf, (char*)text+i+1, 7);
 					buf[7] = '\0';
-					drw_clr_create(drw, &drw->scheme[ColFg], buf);
+					drw_clr_create(drw, &drw->scheme[ColFg], buf, alphas[SchemeNorm][ColFg]);
 					i += 7;
 				} else if (text[i] == 'b') {
 					char buf[8];
 					memcpy(buf, (char*)text+i+1, 7);
 					buf[7] = '\0';
-					drw_clr_create(drw, &drw->scheme[ColBg], buf);
+					drw_clr_create(drw, &drw->scheme[ColBg], buf, alphas[SchemeNorm][ColFg]);
 					i += 7;
 				} else if (text[i] == 'd') {
 					drw->scheme[ColFg] = scheme[SchemeNorm][ColFg];
@@ -283,8 +280,7 @@ Picture get_icon_prop(Window win, unsigned int *picw, unsigned int *pich)
 	if (w <= h) {
 		ich = icon_size; icw = w * icon_size / h;
 		if (icw == 0) icw = 1;
-	}
-	else {
+	} else {
 		icw = icon_size; ich = h * icon_size / w;
 		if (ich == 0) ich = 1;
 	}
@@ -300,37 +296,9 @@ Picture get_icon_prop(Window win, unsigned int *picw, unsigned int *pich)
 	return ret;
 }
 
-unsigned int get_sys_tray_width()
-{
-	unsigned int w = 0;
-	client_t *i;
-
-	if(show_sys_tray)
-		for(i = sys_tray->icons; i; w += i->w + sys_tray_spacing, i = i->next);
-
-	return w ? w + sys_tray_spacing : 1;
-}
-
-void remove_sys_tray_icon(client_t *i)
-{
-	client_t **ii;
-
-	if (!show_sys_tray || !i)
-		return;
-
-	for (ii = &sys_tray->icons; *ii && *ii != i; ii = &(*ii)->next);
-
-	if (ii)
-		*ii = i->next;
-
-	free(i);
-}
-
 void resize_bar_win(monitor_t *m) 
 {
 	unsigned int w = m->ww;
-	if (show_sys_tray && m == sys_tray_to_mon(m) && !sys_tray_on_left)
-		w -= get_sys_tray_width();
 
 	XMoveResizeWindow(dpy, m->barwin, m->wx + sp, m->by + vp, w - 2 * sp, bh);
 }
@@ -340,19 +308,6 @@ void toggle_bar(const arg_t *arg)
 	selmon->showbar = !selmon->showbar;
 	update_bar_pos(selmon);
 	resize_bar_win(selmon);
-	if (show_sys_tray) {
-		XWindowChanges wc;
-		if (!selmon->showbar)
-			wc.y = -bh;
-		else if (selmon->showbar) {
-			wc.y = 0;
-			if (!selmon->topbar)
-				wc.y = selmon->mh - bh;
-		}
-
-		XConfigureWindow(dpy, sys_tray->win, CWY, &wc);
-	}
-
 	arrange(selmon);
 }
 
@@ -363,7 +318,9 @@ void update_bars(void)
 	
 	XSetWindowAttributes wa = {
 		.override_redirect = True,
-		.background_pixmap = ParentRelative,
+		.background_pixel = 0,
+		.border_pixel = 0,
+		.colormap = cmap,
 		.event_mask = ButtonPressMask|ExposureMask
 	};
 
@@ -373,19 +330,15 @@ void update_bars(void)
 			continue;
 
 		w = m->ww;
-		if (show_sys_tray && m == sys_tray_to_mon(m))
-			w -= get_sys_tray_width();
+		if (!m->barwin) {
+			m->barwin = XCreateWindow(dpy, root, m->wx + sp, m->by + vp, w - 2 * sp, bh, 0, depth,
+					InputOutput, visual,
+					CWOverrideRedirect|CWBackPixel|CWBorderPixel|CWColormap|CWEventMask, &wa);
+			XDefineCursor(dpy, m->barwin, cursor[CurNormal]->cursor);
 
-		m->barwin = XCreateWindow(dpy, root, m->wx + sp, m->by + vp, w - 2 * sp, bh, 0, DefaultDepth(dpy, screen),
-				CopyFromParent, DefaultVisual(dpy, screen),
-				CWOverrideRedirect|CWBackPixmap|CWEventMask, &wa);
-		XDefineCursor(dpy, m->barwin, cursor[CurNormal]->cursor);
-
-		if (show_sys_tray && m == sys_tray_to_mon(m))
-			XMapRaised(dpy, sys_tray->win);
-
-		XMapRaised(dpy, m->barwin);
-		XSetClassHint(dpy, m->barwin, &ch);
+			XMapRaised(dpy, m->barwin);
+			XSetClassHint(dpy, m->barwin, &ch);
+		}
 	}
 }
 
@@ -413,132 +366,6 @@ void update_status(void)
 		strcpy(stext, "dwm-"VERSION);
 
 	draw_bar(selmon);
-	update_sys_tray();
-}
-
-void update_sys_tray(void)
-{
-	XSetWindowAttributes wa;
-	XWindowChanges wc;
-	client_t *i;
-	monitor_t *m = sys_tray_to_mon(NULL);
-	unsigned int x = m->mx + m->mw - sp;
-	unsigned int y = m->by + vp;
-	unsigned int sw = TEXTW(stext) - lrpad + sys_tray_spacing;
-	unsigned int w = 1;
-
-	if (!show_sys_tray)
-		return;
-
-	if (sys_tray_on_left)
-		x -= sw + lrpad / 2;
-
-	if (!sys_tray) {
-		/* init sys_tray */
-		if (!(sys_tray = (sys_tray_t *)calloc(1, sizeof(sys_tray))))
-			die("fatal: could not malloc() %u bytes\n", sizeof(sys_tray));
-
-		sys_tray->win = XCreateSimpleWindow(dpy, root, x, y, w, bh, 0, 0, scheme[SchemeSel][ColBg].pixel);
-		wa.event_mask        = ButtonPressMask | ExposureMask;
-		wa.override_redirect = True;
-		wa.background_pixel  = scheme[SchemeNorm][ColBg].pixel;
-		XSelectInput(dpy, sys_tray->win, SubstructureNotifyMask);
-		XChangeProperty(dpy, sys_tray->win, net_atom[NetSystemTrayOrientation], XA_CARDINAL, 32,
-				PropModeReplace, (unsigned char *)&net_atom[NetSystemTrayOrientationHorz], 1);
-		XChangeWindowAttributes(dpy, sys_tray->win, CWEventMask|CWOverrideRedirect|CWBackPixel, &wa);
-		XMapRaised(dpy, sys_tray->win);
-		XSetSelectionOwner(dpy, net_atom[NetSystemTray], sys_tray->win, CurrentTime);
-		
-		if (XGetSelectionOwner(dpy, net_atom[NetSystemTray]) == sys_tray->win) {
-			send_event(root, xatom[Manager], StructureNotifyMask, CurrentTime, net_atom[NetSystemTray], sys_tray->win, 0, 0);
-			XSync(dpy, False);
-		}
-		else {
-			fprintf(stderr, "dwm: unable to obtain system tray.\n");
-			free(sys_tray);
-			sys_tray = NULL;
-			return;
-		}
-	}
-
-	for (w = 0, i = sys_tray->icons; i; i = i->next) {
-		/* make sure the background color stays the same */
-		wa.background_pixel  = scheme[SchemeNorm][ColBg].pixel;
-		XChangeWindowAttributes(dpy, i->win, CWBackPixel, &wa);
-		XMapRaised(dpy, i->win);
-		w += sys_tray_spacing;
-		i->x = w;
-		XMoveResizeWindow(dpy, i->win, i->x, 0, i->w, i->h);
-		w += i->w;
-
-		if (i->mon != m)
-			i->mon = m;
-	}
-
-	w = w ? w + sys_tray_spacing : 1;
-	x -= w;
-	XMoveResizeWindow(dpy, sys_tray->win, x, y, w, bh);
-	wc.x = x; wc.y = y; wc.width = w; wc.height = bh;
-	wc.stack_mode = Above; wc.sibling = m->barwin;
-	XConfigureWindow(dpy, sys_tray->win, CWX|CWY|CWWidth|CWHeight|CWSibling|CWStackMode, &wc);
-	XMapWindow(dpy, sys_tray->win);
-	XMapSubwindows(dpy, sys_tray->win);
-	/* redraw background */
-	XSetForeground(dpy, drw->gc, scheme[SchemeNorm][ColBg].pixel);
-	XFillRectangle(dpy, sys_tray->win, drw->gc, 0, 0, w, bh);
-	XSync(dpy, False);
-}
-
-void update_sys_tray_icon_geom(client_t *i, int w, int h)
-{
-	if (i) {
-		i->h = bh;
-		if (w == h)
-			i->w = bh;
-		else if (h == bh)
-			i->w = w;
-		else
-			i->w = (int) ((float)bh * ((float)w / (float)h));
-
-		apply_size_hints(i, &(i->x), &(i->y), &(i->w), &(i->h), False);
-		/* force icons into the sys_tray dimensions if they don't want to */
-		if (i->h > bh) {
-			if (i->w == i->h)
-				i->w = bh;
-			else
-				i->w = (int) ((float)bh * ((float)i->w / (float)i->h));
-
-			i->h = bh;
-		}
-	}
-}
-
-void update_sys_tray_icon_state(client_t *i, XPropertyEvent *ev)
-{
-	long flags;
-	int code = 0;
-
-	if (!show_sys_tray || !i || ev->atom != xatom[XembedInfo] ||
-			!(flags = get_atom_prop(i, xatom[XembedInfo])))
-		return;
-
-	if (flags & XEMBED_MAPPED && !i->tags) {
-		i->tags = 1;
-		code = XEMBED_WINDOW_ACTIVATE;
-		XMapRaised(dpy, i->win);
-		set_client_state(i, NormalState);
-	}
-	else if (!(flags & XEMBED_MAPPED) && i->tags) {
-		i->tags = 0;
-		code = XEMBED_WINDOW_DEACTIVATE;
-		XUnmapWindow(dpy, i->win);
-		set_client_state(i, WithdrawnState);
-	}
-	else
-		return;
-
-	send_event(i->win, xatom[Xembed], StructureNotifyMask, CurrentTime, code, 0,
-			sys_tray->win, XEMBED_EMBEDDED_VERSION);
 }
 
 void update_title(client_t *c)
@@ -548,16 +375,4 @@ void update_title(client_t *c)
 
 	if (c->name[0] == '\0') /* hack to mark broken clients */
 		strcpy(c->name, broken);
-}
-
-client_t *win_to_sys_tray_icon(Window w) 
-{
-	client_t *i = NULL;
-
-	if (!show_sys_tray || !w)
-		return i;
-
-	for (i = sys_tray->icons; i && i->win != w; i = i->next);
-
-	return i;
 }

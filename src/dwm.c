@@ -72,10 +72,10 @@ static void toggle_tag(const arg_t *arg);
 static void toggle_view(const arg_t *arg);
 static void view(const arg_t *arg);
 static int xerror_start(Display *dpy, XErrorEvent *ee);
+static void xinit_visual(void);
 static void zoom(const arg_t *arg);
 
 /* variables */
-sys_tray_t *sys_tray = NULL;
 const char broken[] = "broken";
 int screen;
 int sw, sh;           /* X display screen geometry width, height */
@@ -96,7 +96,6 @@ void (*handler[LASTEvent]) (XEvent *) = {
 	[MapRequest] = map_request,
 	[MotionNotify] = motion_notify,
 	[PropertyNotify] = property_notify,
-        [ResizeRequest] = resize_request,
 	[UnmapNotify] = unmap_notify
 };
 Atom wm_atom[WMLast], net_atom[NetLast], xatom[XLast];
@@ -109,6 +108,12 @@ drw_t *drw;
 layout_t *last_layout;
 monitor_t *mons, *selmon;
 Window root, wm_check_win;
+int useargb = 0;
+Visual *visual;
+int depth;
+Colormap cmap;
+
+#define OPAQUE 0xffU
 
 /* configuration, allows nested code to access above variables */
 #include "../config.h"
@@ -143,12 +148,6 @@ void cleanup(void)
 	XUngrabKey(dpy, AnyKey, AnyModifier, root);
 	while (mons)
 		cleanup_mon(mons);
-
-	if (show_sys_tray) {
-		XUnmapWindow(dpy, sys_tray->win);
-		XDestroyWindow(dpy, sys_tray->win);
-		free(sys_tray);
-	}
 
         for (i = 0; i < CurLast; i++)
 		drw_cur_free(drw, cursor[i]);
@@ -360,7 +359,9 @@ void setup(void)
 	sw = DisplayWidth(dpy, screen);
 	sh = DisplayHeight(dpy, screen);
 	root = RootWindow(dpy, screen);
-	drw = drw_create(dpy, screen, root, sw, sh);
+
+	xinit_visual();
+	drw = drw_create(dpy, screen, root, sw, sh, visual, depth, cmap);
 
 	if (!drw_fontset_create(drw, fonts, LENGTH(fonts)))
 		die("no fonts could be loaded.");
@@ -379,16 +380,13 @@ void setup(void)
 	wm_atom[WMTakeFocus] = XInternAtom(dpy, "WM_TAKE_FOCUS", False);
 	net_atom[NetActiveWindow] = XInternAtom(dpy, "_NET_ACTIVE_WINDOW", False);
         net_atom[NetSupported] = XInternAtom(dpy, "_NET_SUPPORTED", False);
-	net_atom[NetSystemTray] = XInternAtom(dpy, "_NET_SYSTEM_TRAY_S0", False);
-	net_atom[NetSystemTrayOP] = XInternAtom(dpy, "_NET_SYSTEM_TRAY_OPCODE", False);
-	net_atom[NetSystemTrayOrientation] = XInternAtom(dpy, "_NET_SYSTEM_TRAY_ORIENTATION", False);
-	net_atom[NetSystemTrayOrientationHorz] = XInternAtom(dpy, "_NET_SYSTEM_TRAY_ORIENTATION_HORZ", False);
         net_atom[NetWMName] = XInternAtom(dpy, "_NET_WM_NAME", False);
         net_atom[NetWMIcon] = XInternAtom(dpy, "_NET_WM_ICON", False);
 	net_atom[NetWMState] = XInternAtom(dpy, "_NET_WM_STATE", False);
 	net_atom[NetWMCheck] = XInternAtom(dpy, "_NET_SUPPORTING_WM_CHECK", False);
 	net_atom[NetWMFullscreen] = XInternAtom(dpy, "_NET_WM_STATE_FULLSCREEN", False);
 	net_atom[NetWMWindowType] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE", False);
+	net_atom[NetWMWindowTypeDock] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE_DOCK", False);
 	net_atom[NetWMWindowTypeDialog] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE_DIALOG", False);
 	net_atom[NetClientList] = XInternAtom(dpy, "_NET_CLIENT_LIST", False);
 	xatom[Manager] = XInternAtom(dpy, "MANAGER", False);
@@ -417,12 +415,9 @@ void setup(void)
 	}
 
 	scheme = ecalloc(scm_len + 1, sizeof(clr_t *));
-	scheme[scm_len] = drw_scm_create(drw, colors[0], 3);
+	scheme[scm_len] = drw_scm_create(drw, colors[0], alphas[0], 3);
 	for (i = 0; i < scm_len; i++)
-		scheme[i] = drw_scm_create(drw, colors[i], 3);
-	
-	/* init system tray */
-	update_sys_tray();
+		scheme[i] = drw_scm_create(drw, colors[i], alphas[i], 3);
 	
 	/* init bars */
 	update_bars();
@@ -665,6 +660,43 @@ int xerror_start(Display *dpy, XErrorEvent *ee)
 {
 	die("dwm: another window manager is already running");
 	return -1;
+}
+
+void xinit_visual(void)
+{
+	XVisualInfo *infos;
+	XRenderPictFormat *fmt;
+	int nitems;
+	int i;
+
+	XVisualInfo tpl = {
+		.screen = screen,
+		.depth = 32,
+		.class = TrueColor
+	};
+	
+	long masks = VisualScreenMask | VisualDepthMask | VisualClassMask;
+
+	infos = XGetVisualInfo(dpy, masks, &tpl, &nitems);
+	visual = NULL;
+	for (i = 0; i < nitems; i ++) {
+		fmt = XRenderFindVisualFormat(dpy, infos[i].visual);
+		if (fmt->type == PictTypeDirect && fmt->direct.alphaMask) {
+			visual = infos[i].visual;
+			depth = infos[i].depth;
+			cmap = XCreateColormap(dpy, root, visual, AllocNone);
+			useargb = 1;
+			break;
+		}
+	}
+
+	XFree(infos);
+
+	if (!visual) {
+		visual = DefaultVisual(dpy, screen);
+		depth = DefaultDepth(dpy, screen);
+		cmap = DefaultColormap(dpy, screen);
+	}
 }
 
 void zoom(const arg_t *arg)

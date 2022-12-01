@@ -13,18 +13,5 @@
 #define WIDTH(X)                ((X)->w + 2 * (X)->bw + gap_px)
 #define HEIGHT(X)               ((X)->h + 2 * (X)->bw + gap_px)
 #define TAG_MASK                 ((1 << tag_len) - 1)
-#define SYSTEM_TRAY_REQUEST_DOCK    0
-
-/* XEMBED messages */
-#define XEMBED_EMBEDDED_NOTIFY      0
-#define XEMBED_WINDOW_ACTIVATE      1
-#define XEMBED_FOCUS_IN             4
-#define XEMBED_MODALITY_ON          10
-#define XEMBED_MAPPED               (1 << 0)
-#define XEMBED_WINDOW_ACTIVATE      1
-#define XEMBED_WINDOW_DEACTIVATE    2
-#define VERSION_MAJOR               0
-#define VERSION_MINOR               0
-#define XEMBED_EMBEDDED_VERSION (VERSION_MAJOR << 16) | VERSION_MINOR
 
 #endif

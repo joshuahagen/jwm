@@ -14,7 +14,6 @@ void mapping_notify(XEvent *event);
 void map_request(XEvent *event);
 void motion_notify(XEvent *event);
 void property_notify(XEvent *event);
-void resize_request(XEvent *event);
 void unmap_notify(XEvent *event);
 
 #endif

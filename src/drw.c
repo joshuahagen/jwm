@@ -65,7 +65,7 @@ static size_t utf8decode(const char *c, long *u, size_t clen)
 	return len;
 }
 
-drw_t *drw_create(Display *dpy, int screen, Window root, unsigned int w, unsigned int h)
+drw_t *drw_create(Display *dpy, int screen, Window root, unsigned int w, unsigned int h, Visual *visual, unsigned int depth, Colormap cmap)
 {
 	drw_t *drw = ecalloc(1, sizeof(drw_t));
 
@@ -74,9 +74,12 @@ drw_t *drw_create(Display *dpy, int screen, Window root, unsigned int w, unsigne
 	drw->root = root;
 	drw->w = w;
 	drw->h = h;
-	drw->drawable = XCreatePixmap(dpy, root, w, h, DefaultDepth(dpy, screen));
-	drw->picture = XRenderCreatePicture(dpy, drw->drawable, XRenderFindVisualFormat(dpy, DefaultVisual(dpy, screen)), 0, NULL);
-	drw->gc = XCreateGC(dpy, root, 0, NULL);
+	drw->visual = visual;
+	drw->depth = depth;
+	drw->cmap = cmap;
+	drw->drawable = XCreatePixmap(dpy, root, w, h, depth);
+	drw->picture = XRenderCreatePicture(dpy, drw->drawable, XRenderFindVisualFormat(dpy, visual), 0, NULL);
+	drw->gc = XCreateGC(dpy, drw->drawable, 0, NULL);
 	XSetLineAttributes(dpy, drw->gc, 1, LineSolid, CapButt, JoinMiter);
 
 	return drw;
@@ -95,7 +98,7 @@ void drw_resize(drw_t *drw, unsigned int w, unsigned int h)
 	if (drw->drawable)
 		XFreePixmap(drw->dpy, drw->drawable);
 
-	drw->drawable = XCreatePixmap(drw->dpy, drw->root, w, h, DefaultDepth(drw->dpy, drw->screen));
+	drw->drawable = XCreatePixmap(drw->dpy, drw->root, w, h, drw->depth);
 	drw->picture = XRenderCreatePicture(drw->dpy, drw->drawable, XRenderFindVisualFormat(drw->dpy, DefaultVisual(drw->dpy, drw->screen)), 0, NULL);
 }
 
@@ -189,20 +192,21 @@ void drw_fontset_free(fnt_t *font)
 	}
 }
 
-void drw_clr_create(drw_t *drw, clr_t *dest, const char *clrname)
+void drw_clr_create(drw_t *drw, clr_t *dest, const char *clrname, unsigned int alpha)
 {
 	if (!drw || !dest || !clrname)
 		return;
 
-	if (!XftColorAllocName(drw->dpy, DefaultVisual(drw->dpy, drw->screen),
-				DefaultColormap(drw->dpy, drw->screen),
+	if (!XftColorAllocName(drw->dpy, drw->visual, drw->cmap,
 				clrname, dest))
 		die("error, cannot allocate color '%s'", clrname);
+
+	dest->pixel = (dest->pixel & 0x00ffffffU) | (alpha << 24);
 }
 
 /* Wrapper to create color schemes. The caller has to call free(3) on the
  * returned color scheme when done using it. */
-clr_t *drw_scm_create(drw_t *drw, const char *clrnames[], size_t clrcount)
+clr_t *drw_scm_create(drw_t *drw, const char *clrnames[], const unsigned int alphas[], size_t clrcount)
 {
 	size_t i;
 	clr_t *ret;
@@ -212,7 +216,7 @@ clr_t *drw_scm_create(drw_t *drw, const char *clrnames[], size_t clrcount)
 		return NULL;
 
 	for (i = 0; i < clrcount; i++)
-		drw_clr_create(drw, &ret[i], clrnames[i]);
+		drw_clr_create(drw, &ret[i], clrnames[i], alphas[i]);
 
 	return ret;
 }
@@ -330,9 +334,7 @@ int drw_text(drw_t *drw, int x, int y, unsigned int w, unsigned int h, unsigned 
 	} else {
 		XSetForeground(drw->dpy, drw->gc, drw->scheme[invert ? ColFg : ColBg].pixel);
 		XFillRectangle(drw->dpy, drw->drawable, drw->gc, x, y, w, h);
-		d = XftDrawCreate(drw->dpy, drw->drawable,
-		                  DefaultVisual(drw->dpy, drw->screen),
-		                  DefaultColormap(drw->dpy, drw->screen));
+		d = XftDrawCreate(drw->dpy, drw->drawable, drw->visual, drw->cmap);
 		x += lpad;
 		w -= lpad;
 	}

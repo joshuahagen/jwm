@@ -9,7 +9,6 @@
 
 /* variables */
 extern int lrpad;
-extern sys_tray_t *sys_tray;
 extern const char broken[];
 extern int screen;
 extern int sw, sh;             
@@ -19,6 +18,10 @@ extern Display *dpy;
 extern drw_t *drw;
 extern monitor_t *mons, *selmon;
 extern Window root, wm_check_win;
+extern int useargb;
+extern Visual *visual;
+extern int depth;
+extern Colormap cmap;
 extern clr_t **scheme;
 extern int scm_len;
 extern Atom wm_atom[WMLast], net_atom[NetLast], xatom[XLast];

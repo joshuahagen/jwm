@@ -104,26 +104,6 @@ void send_mon(client_t *c, monitor_t *m)
 	arrange(NULL);
 }
 
-monitor_t *sys_tray_to_mon(monitor_t *m) 
-{
-	monitor_t *t;
-	int i, n;
-	if(!sys_tray_pinning) {
-		if(!m)
-			return selmon;
-
-		return m == selmon ? m : NULL;
-	}
-
-	for(n = 1, t = mons; t && t->next; n++, t = t->next) ;
-	for(i = 1, t = mons; t && t->next && i < sys_tray_pinning; i++, t = t->next) ;
-	
-	if(sys_tray_pinning_fail_first && n < sys_tray_pinning)
-		return mons;
-	
-	return t;
-}
-
 void tag_mon(const arg_t *arg)
 {
 	if (!selmon->sel || !mons->next)
