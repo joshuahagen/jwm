@@ -1,6 +1,8 @@
 #ifndef LAYOUT_H
 #define LAYOUT_H
 
+void centered_master(monitor_t *mon);
+void centered_floating_master(monitor_t *mon);
 void dwindle(monitor_t *mon);
 void fullscreen(const arg_t *arg);
 void grid(monitor_t *mon);

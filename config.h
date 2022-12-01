@@ -70,12 +70,14 @@ const int lock_full_screen    = 1;      /* 1 will force focus on the fullscreen 
 
 const layout_t layouts[] = {
 	/* symbol       arrange function */
-	{ "[]=",      tile    },    /* first entry is default */
-	{ "><>",      NULL    },    /* no layout function means floating behavior */
-	{ "[M]",      monocle },    /* monocle is a full size window that overlapps */
-	{ "HHH",      grid    },    /* grid like layout, will make every window the same size */
-	{ "[@]",      spiral  },    /* spiral windows inward */
-	{ "[\\]",     dwindle },    /* dwindle windows similar to bspwm's default tiling mechanism */
+	{ "[]=",      tile    },    			  /* first entry is default */
+	{ "><>",      NULL    },    			  /* no layout function means floating behavior */
+	{ "[M]",      monocle },   				  /* monocle is a full size window that overlapps */
+	{ "HHH",      grid    },    			  /* grid like layout, will make every window the same size */
+	{ "[@]",      spiral  },    			  /* spiral windows inward */
+	{ "[\\]",     dwindle },    			  /* dwindle windows similar to bspwm's default tiling mechanism */
+	{ "|M|",      centered_master },		  /* master window is in the center always */
+	{ ">M>",      centered_floating_master }, /* same as centered master, just the master is floating */
 };
 
 /* key definitions */
@@ -117,6 +119,8 @@ const _key_t keys[] = {
 	{ MODKEY,                       XK_space,		   set_layout,      	{0} },
 	{ MODKEY,			XK_r,			   set_layout,          {.v = &layouts[4]} },
 	{ MODKEY|ShiftMask,	        XK_r,			   set_layout,		{.v = &layouts[5]} },
+	{ MODKEY,			XK_u,			   set_layout,		{.v = &layouts[6]} },
+	{ MODKEY,			XK_o,			   set_layout,		{.v = &layouts[7]} },
 	{ MODKEY|ShiftMask,             XK_space,		   toggle_floating,	{0} },
 	{ MODKEY,                       XK_0,			   view,            	{.ui = ~0 } },
 	{ MODKEY|ShiftMask,             XK_0,			   tag,            	{.ui = ~0 } },

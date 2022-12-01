@@ -79,7 +79,7 @@ void draw_bar(monitor_t *m)
 					if (TEXTW(m->sel->name) < w)
 						drw_pic(drw, x + (w - TEXTW(m->sel->name)) / 2 - (m->sel->icw + 3), 
 								(bh - m->sel->ich) / 2, m->sel->icw, m->sel->ich, m->sel->icon);
-
+				
 				if (m->sel->isfloating)
 					drw_rect(drw, x + w - boxw, boxs, boxw, boxw, m->sel->isfixed, 0);
 			}

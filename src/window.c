@@ -303,8 +303,10 @@ void manage(Window w, XWindowAttributes *wa)
 	if (XGetTransientForHint(dpy, w, &trans) && (t = win_to_client(trans))) {
 		c->mon = t->mon;
 		c->tags = t->tags;
+		c->bw = border_px;
 	} else {
 		c->mon = selmon;
+		c->bw = border_px;
 		apply_rules(c);
 	}
 
@@ -316,13 +318,11 @@ void manage(Window w, XWindowAttributes *wa)
 
 	c->x = MAX(c->x, c->mon->wx);
 	c->y = MAX(c->y, c->mon->wy);
-	c->bw = border_px;
 
 	wc.border_width = c->bw;
 	XConfigureWindow(dpy, w, CWBorderWidth, &wc);
 	XSetWindowBorder(dpy, w, scheme[SchemeNorm][ColBorder].pixel);
 	configure(c); /* propagates border_width, if size doesn't change */
-	update_window_type(c);
 	update_size_hints(c);
 	update_wm_hints(c);
 	XSelectInput(dpy, w, EnterWindowMask|FocusChangeMask|PropertyChangeMask|StructureNotifyMask);
