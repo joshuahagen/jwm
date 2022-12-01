@@ -29,7 +29,7 @@ extern void (*handler[LASTEvent]) (XEvent *);
 
 int get_text_prop(Window w, Atom atom, char *text, unsigned int size);
 uint32_t pre_alpha(uint32_t p);
-int send_event(Window w, Atom proto, int m, long d0, long d1, long d2, long d3, long d4);
+int send_event(client_t *c, Atom proto);
 int update_geom(void);
 void update_wm_hints(client_t *c);
 int xerror(Display *dpy, XErrorEvent *ee);

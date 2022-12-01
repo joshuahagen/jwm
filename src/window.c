@@ -272,7 +272,7 @@ void kill_client(const arg_t *arg)
 	if (!selmon->sel)
 		return;
 
-	if (!send_event(selmon->sel->win, wm_atom[WMDelete], NoEventMask, wm_atom[WMDelete], CurrentTime, 0 , 0, 0)) {
+	if (!send_event(selmon->sel, wm_atom[WMDelete])) {
 		XGrabServer(dpy);
 		XSetErrorHandler(xerror_dummy);
 		XSetCloseDownMode(dpy, DestroyAll);
@@ -570,7 +570,7 @@ void set_focus(client_t *c)
 			(unsigned char *) &(c->win), 1);
 	}
 
-	send_event(c->win, wm_atom[WMTakeFocus], NoEventMask, wm_atom[WMTakeFocus], CurrentTime, 0, 0, 0);
+	send_event(c, wm_atom[WMTakeFocus]);
 }
 
 void set_full_screen(client_t *c, int fullscreen)
