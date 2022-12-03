@@ -4,32 +4,36 @@
 #include "src/layout.h"
 
 /* appearance */
-const unsigned int border_px             = 0;        /* border pixel of windows */
-const unsigned int gap_px             	 = 5;	     /* gap between windows in tiling mode */
-const unsigned int snap    	 	 = 32;       /* snap pixel */
-const unsigned int bar_alpha     	 = 200;      /* alpha of bar 255 = no transparency */
-const unsigned int border_alpha 	 = OPAQUE;
-const int showbar          	 	 = 1;        /* 0 means no bar */
-const int topbar           	 	 = 1;        /* 0 means bottom bar */
-const int topbar_padding	  	 = 12;       /* default spacing around the bars font */
-const int vert_pad			 = 6;		
-const int side_pad		         = 10;
-const int center_title		 	 = 0;        /* 0 means title is not centered */
-const char *fonts[]               	 = { "Hack:size=12" };
-const char dmenufont[]            	 = "Hack:size=12";
-/* color definitions 			   hex code */
-static const char col_gray1[]            = "#363636";
-static const char col_gray2[]            = "#292929";
-static const char col_gray3[]            = "#bbbbbb";
-static const char col_gray5[]		 = "#2F2F2F";
-static const char col_blue[]		 = "#3099A1";
-static const char col_blue2[]            = "#192841";
-static const char col_purple[]     	 = "#af7fcd";
-static const char col_purple2[]          = "#221C35";
-static const char col_yellow_white[]     = "#E7D7AD";
+const unsigned int border_px         = 0;        /* border pixel of windows */
+const unsigned int gap_px            = 5;	     /* gap between windows in tiling mode */
+const unsigned int snap    	     = 32;       /* snap pixel */
+const unsigned int bar_alpha         = 200;      /* alpha of bar 255 = no transparency */
+const unsigned int border_alpha      = OPAQUE;
+const int showbar          	     = 1;        /* 0 means no bar */
+const int topbar           	     = 1;        /* 0 means bottom bar */
+const int topbar_padding	     = 12;       /* default spacing around the bars font */
+const int vert_pad		     = 6;		
+const int side_pad		     = 10;
+const int center_title		     = 0;        /* 0 means title is not centered */
+const char *fonts[]                  = { "Hack:size=12" };
+const char dmenufont[]               = "Hack:size=12";
+/* color definitions 		       hex code */
+static const char col_gray1[]        = "#363636";
+static const char col_gray2[]        = "#292929";
+static const char col_gray3[]        = "#bbbbbb";
+static const char col_gray5[]	     = "#2F2F2F";
+static const char col_blue[]	     = "#3099A1";
+static const char col_blue2[]        = "#192841";
+static const char col_purple[]       = "#af7fcd";
+static const char col_purple2[]      = "#221C35";
+static const char col_yellow_white[] = "#E7D7AD";
 /* end color definitions */
-const unsigned int icon_size      = 16;	    /* icon size */
-const unsigned int icon_spacing   = 5;	    /* space between icon and the window title */
+const unsigned int icon_size         = 16;	 /* icon size */
+const unsigned int icon_spacing      = 5;	 /* space between icon and the window title */
+const unsigned int tag_uline_pad     = 5;	 /* horizontal padding between the line and tag */
+const unsigned int tag_uline_stroke  = 2;        /* height of the line */
+const unsigned int tag_uline_voffset = 0;	 /* how far above the bottom of the bar the line should appear */
+const unsigned int tag_uline_all     = 0;	 /* 0 means just for selected active tags, 1 means draw underline on all tags */
 
 /* color schemes, modify this to change most colors */
 const char* colors[][3] = {

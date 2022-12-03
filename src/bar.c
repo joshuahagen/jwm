@@ -46,6 +46,9 @@ void draw_bar(monitor_t *m)
 		drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
 		drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
 
+		if (tag_uline_all || m->tagset[m->seltags] & 1 << i)
+			drw_rect(drw, x + tag_uline_pad, bh - tag_uline_stroke - tag_uline_voffset, w - (tag_uline_pad * 2), tag_uline_stroke, 1, 0);
+
 		if (occ & 1 << i)
 			drw_rect(drw, x + w - boxw, boxs, boxw, boxw,
 				m == selmon && selmon->sel && selmon->sel->tags & 1 << i,
