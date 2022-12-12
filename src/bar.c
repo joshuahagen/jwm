@@ -23,7 +23,7 @@ void draw_bar(monitor_t *m)
 		return;
 
 	/* draw status first so it can be overdrawn by tags later */
-	if (m == selmon && m->mw >= 2560) { /* status is only drawn on monitor wide enough to display full statusbar */
+	if (m == &mons[mainmon]) { /* status is only drawn on monitor wide enough to display full statusbar */
 		tw = m->ww - draw_status_bar(m, bh, stext);
 	}
 	
@@ -365,7 +365,7 @@ void update_status(void)
 	if (!get_text_prop(root, XA_WM_NAME, stext, sizeof(stext)))
 		strcpy(stext, "dwm-"VERSION);
 
-	draw_bar(selmon);
+	draw_bar(&mons[mainmon]);
 }
 
 void update_title(client_t *c)

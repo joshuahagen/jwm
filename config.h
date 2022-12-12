@@ -66,11 +66,11 @@ const rule_t rules[] = {
 	{ "Virt-manager", 	NULL,	    NULL,       1 << 4,	      0,	   -1 },
 };
 
-/* layout(s) */
 const float mfact             = 0.50;   /* factor of master area size [0.05..0.95] */
 const int nmaster             = 1;      /* number of clients in master area */
 const int resize_hints        = 0;      /* 1 means respect size hints in tiled resizals */
 const int lock_full_screen    = 1;      /* 1 will force focus on the fullscreen window */
+const int mainmon   		  = 0;	    /* xsetroot will only change the bar on this monitor */
 
 const layout_t layouts[] = {
 	/* symbol       arrange function */

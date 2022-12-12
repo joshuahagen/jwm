@@ -28,6 +28,7 @@ extern const unsigned int tag_uline_all;
 extern const float mfact;           
 extern const int nmaster;   
 extern const int resize_hints;
+extern const int mainmon;
 
 extern const char* colors[12][3];
 extern const unsigned int alphas[3][3];
