@@ -23,7 +23,7 @@ void draw_bar(monitor_t *m)
 		return;
 
 	/* draw status first so it can be overdrawn by tags later */
-	if (m == &mons[mainmon]) { /* status is only drawn on monitor wide enough to display full statusbar */
+	if (m == &mons[mainmon]) { /* only draw status bar on the main monitor */
 		tw = m->ww - draw_status_bar(m, bh, stext);
 	}
 	

@@ -5,7 +5,7 @@
 
 /* appearance */
 const unsigned int border_px         = 0;        /* border pixel of windows */
-const unsigned int gap_px            = 5;	     /* gap between windows in tiling mode */
+const unsigned int gap_px            = 5;	 /* gap between windows in tiling mode */
 const unsigned int snap    	     = 32;       /* snap pixel */
 const unsigned int bar_alpha         = 200;      /* alpha of bar 255 = no transparency */
 const unsigned int border_alpha      = OPAQUE;
@@ -70,18 +70,18 @@ const float mfact             = 0.50;   /* factor of master area size [0.05..0.9
 const int nmaster             = 1;      /* number of clients in master area */
 const int resize_hints        = 0;      /* 1 means respect size hints in tiled resizals */
 const int lock_full_screen    = 1;      /* 1 will force focus on the fullscreen window */
-const int mainmon   		  = 0;	    /* xsetroot will only change the bar on this monitor */
+const int mainmon             = 0;	/* xsetroot will only change the bar on this monitor */
 
 const layout_t layouts[] = {
 	/* symbol       arrange function */
 	{ "[]=",      tile    },    			  /* first entry is default */
 	{ "><>",      NULL    },    			  /* no layout function means floating behavior */
-	{ "[M]",      monocle },   				  /* monocle is a full size window that overlapps */
+	{ "[M]",      monocle },   		          /* monocle is a full size window that overlapps */
 	{ "HHH",      grid    },    			  /* grid like layout, will make every window the same size */
 	{ "[@]",      spiral  },    			  /* spiral windows inward */
 	{ "[\\]",     dwindle },    			  /* dwindle windows similar to bspwm's default tiling mechanism */
 	{ "|M|",      centered_master },		  /* master window is in the center always */
-	{ ">M>",      centered_floating_master }, /* same as centered master, just the master is floating */
+	{ ">M>",      centered_floating_master },         /* same as centered master, just the master is floating */
 };
 
 /* key definitions */
@@ -167,16 +167,16 @@ const _key_t keys[] = {
 /* button definitions */
 /* click can be ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle, ClkClientWin, or ClkRootWin */
 const button_t buttons[] = {
-	/* click                event mask      button          function        argument */
-	{ ClkLtSymbol,          0,              Button1,        set_layout,      {0} },
-	{ ClkLtSymbol,          0,              Button3,        set_layout,      {.v = &layouts[2]} },
-	{ ClkWinTitle,          0,              Button2,        zoom,            {0} },
-	{ ClkStatusText,	0,		Button2,	spawn,		 {.v = termcmd } },
+	/* click                event mask      button          function        	argument */
+	{ ClkLtSymbol,          0,              Button1,        set_layout,      	{0} },
+	{ ClkLtSymbol,          0,              Button3,        set_layout,      	{.v = &layouts[2]} },
+	{ ClkWinTitle,          0,              Button2,        zoom,            	{0} },
+	{ ClkStatusText,	0,		Button2,	spawn,		 	{.v = termcmd } },
 	{ ClkClientWin,         MODKEY,         Button1,        window_move_mouse,      {0} },
-	{ ClkClientWin,         MODKEY,         Button2,        toggle_floating, {0} },
+	{ ClkClientWin,         MODKEY,         Button2,        toggle_floating,        {0} },
 	{ ClkClientWin,         MODKEY,         Button3,        window_resize_mouse,    {0} },
-	{ ClkTagBar,            0,              Button1,        view,            {0} },
-	{ ClkTagBar,            0,              Button3,        toggle_view,     {0} },
-	{ ClkTagBar,            MODKEY,         Button1,        tag,             {0} },
-	{ ClkTagBar,            MODKEY,         Button3,        toggle_tag,      {0} },
+	{ ClkTagBar,            0,              Button1,        view,            	{0} },
+	{ ClkTagBar,            0,              Button3,        toggle_view,    	{0} },
+	{ ClkTagBar,            MODKEY,         Button1,        tag,             	{0} },
+	{ ClkTagBar,            MODKEY,         Button3,        toggle_tag,      	{0} },
 };
